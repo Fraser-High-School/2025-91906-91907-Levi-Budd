@@ -58,12 +58,19 @@ class Quiz():
                                   )
         self.quiz_instructions.grid(row=4)
 
+        self.check_results_label = Label(self.quiz_frame,
+                                  text="check results",
+                                  font=("arial", "20"),
+                                  bg=background_color,
+                                  )
+        self.check_results_label.grid(row=4)
+
 
         self.button_frame = Frame(self.quiz_frame,
                                 bg=background_color,)
         self.button_frame.grid()
-
-       
+        global first_time
+        self.first_time = True
         self.buttonswitch_left("default")
         self.buttonswitch_right("default")
         
@@ -73,7 +80,7 @@ class Quiz():
         button_details_list = [
             # text, color, command, row, column
             # put your buttons features in this list.
-            ["Check results", "#aaaeff", lambda:self.buttonswitch_right("begin"), "1"],
+            ["results", "#aaaeff", lambda:self.buttonswitch_right("begin"), "1"],
             ["finish", "#ffe600", lambda:self.buttonswitch_right("default"), "1"],
         ]
         self.button_ref_list = []
@@ -84,13 +91,12 @@ class Quiz():
                                         text=button_details_list[0][0],
                                         bg=button_details_list[0][1],
                                         fg="#000000",
-                                        font=("Arial", "15", "bold"),
+                                        font=("Arial", "20", "bold"),
                                         width=9,
-                                        height=1,
-                                        command=button_details_list[0][2],
+                                        command=button_details_list[0][2]
                                         )
-                self.make_button.grid(column=1, padx=3, pady=5)
-                self.button_ref_list.append(self.make_button)
+                self.make_button.grid(row=0, column=1)
+                
 
         elif case == "begin":
         #actually turns the variables into buttons
@@ -100,12 +106,12 @@ class Quiz():
                                         fg="#000000",
                                         font=("Arial", "20", "bold"),
                                         width=9,
-                                        height=1,
                                         command=button_details_list[1][2]
                                         )
-                self.make_button.grid(column=1, padx=3, pady=5)
-                self.button_ref_list.append(self.make_button)
-        
+                self.make_button.grid(row=0, column=1)
+                
+
+
     def buttonswitch_left(self, case):
         button_details_list = [
             # text, color, command, row, column
@@ -124,11 +130,10 @@ class Quiz():
                                         fg="#000000",
                                         font=("Arial", "20", "bold"),
                                         width=9,
-                                        height=1,
                                         command=button_details_list[0][2]
                                         )
-                self.make_button.grid(column=0, padx=3, pady=5)
-                self.button_ref_list.append(self.make_button)
+                self.make_button.grid(row=0, column=0)
+                
 
         elif case == "begin":
         #actually turns the variables into buttons
@@ -138,11 +143,10 @@ class Quiz():
                                         fg="#000000",
                                         font=("Arial", "20", "bold"),
                                         width=9,
-                                        height=1,
                                         command=button_details_list[1][2]
                                         )
-                self.make_button.grid(column=0, padx=3, pady=5)
-                self.button_ref_list.append(self.make_button)
+                self.make_button.grid(row=0, column=0)
+                
 
         elif case == "end":
     #actually turns the variables into buttons
@@ -152,12 +156,11 @@ class Quiz():
                                     fg="#000000",
                                     font=("Arial", "20", "bold"),
                                     width=9,
-                                    height=1,
                                     state="disabled",
                                     command=button_details_list[2][2]
                                     )
-            self.make_button.grid(column=0, padx=3, pady=5)
-            self.button_ref_list.append(self.make_button)
+            self.make_button.grid(row=0, column=0)
+            
                 
 
         
