@@ -1,7 +1,8 @@
+# this is just importing tkinter, time, 
+# and questions & answers from questions.py
 from tkinter import *
 from time import *
 import questions as q
-import tkinter as tk
 class Quiz():
     
     """
@@ -40,6 +41,7 @@ class Quiz():
                                   )
         self.quiz_entry.grid(row=2, padx=1, pady=1)
 
+        # This is an label which tells the use where to place answer
         self.quiz_entry_instructions_color = Label(self.quiz_frame,
                                   text="Please enter your answer above",
                                   font=("arial", "12"),
@@ -47,9 +49,8 @@ class Quiz():
                                   bg=background_color,
                                   )
         self.quiz_entry_instructions_color.grid(row=3, padx=1, pady=1,)
-        # this is the end of the entry instructions frame
 
-        #
+        # another label that explains stuff
         self.quiz_instructions = Label(self.quiz_frame,
                                   text="Press start quiz to start answering questions!",
                                   font=("arial", "20"),
@@ -58,19 +59,13 @@ class Quiz():
                                   )
         self.quiz_instructions.grid(row=4)
 
-        self.check_results_label = Label(self.quiz_frame,
-                                  text="check results",
-                                  font=("arial", "20"),
-                                  bg=background_color,
-                                  )
-        self.check_results_label.grid(row=4)
-
 
         self.button_frame = Frame(self.quiz_frame,
                                 bg=background_color,)
         self.button_frame.grid()
-        global first_time
-        self.first_time = True
+
+        # These two functions start the buttons up, case is set as default to make
+        # the base buttons.
         self.buttonswitch_left("default")
         self.buttonswitch_right("default")
         
@@ -80,7 +75,7 @@ class Quiz():
         button_details_list = [
             # text, color, command, row, column
             # put your buttons features in this list.
-            ["results", "#aaaeff", lambda:self.buttonswitch_right("begin"), "1"],
+            ["results", "#aaaeff", lambda:print("not implemented yet"), "1"],
             ["finish", "#ffe600", lambda:self.buttonswitch_right("default"), "1"],
         ]
         self.button_ref_list = []
@@ -99,7 +94,7 @@ class Quiz():
                 
 
         elif case == "begin":
-        #actually turns the variables into buttons
+        # this makes the finish button, it runs when the start buttons gets pressed
                 self.make_button = Button(self.button_frame,
                                         text=button_details_list[1][0],
                                         bg=button_details_list[1][1],
@@ -123,7 +118,7 @@ class Quiz():
         self.button_ref_list = []
 
         if case == "default":
-        #creates the default button that appears on program startup
+        #creates the default start quiz button that appears on program startup
                 self.make_button = Button(self.button_frame,
                                         text=button_details_list[0][0],
                                         bg=button_details_list[0][1],
@@ -136,7 +131,7 @@ class Quiz():
                 
 
         elif case == "begin":
-        #actually turns the variables into buttons
+        # This makes the submit button when the start quiz button is pressed, it also creates the finish button
                 self.make_button = Button(self.button_frame,
                                         text=button_details_list[1][0],
                                         bg=button_details_list[1][1],
@@ -146,6 +141,8 @@ class Quiz():
                                         command=button_details_list[1][2]
                                         )
                 self.make_button.grid(row=0, column=0)
+
+                self.buttonswitch_right("begin")
                 
 
         elif case == "end":
