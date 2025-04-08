@@ -1,4 +1,4 @@
-# this is just importing tkinter, time, 
+# importing tkinter, time, 
 # and questions & answers from questions.py
 from tkinter import *
 from time import *
@@ -6,18 +6,18 @@ import questions as q
 class Quiz():
     
     """
-    This tool is used to quiz people on stuff, it take the questions and
-    answers from 'questions.py'
+    tool is used to quiz people using the questions and answers set by the operator,
+    it takes the questions and answers from 'questions.py'
     """
     def __init__(self):
-        # this variable is the color grey used for the backround
+        # backround_color variable is the color grey used for the backround
         # makes it so you can change every widgets backround color
         # at the same time.
         global background_color
         background_color = "#b3b3b3"
         
         
-        # this just sets the size of the window
+        # sets the size of the window and its color
         root.geometry("360x300")
         root.wm_attributes("-transparentcolor", 'grey') 
         root.configure(bg=background_color)
@@ -41,7 +41,7 @@ class Quiz():
                                   )
         self.quiz_entry.grid(row=2, padx=1, pady=1)
 
-        # This is an label which tells the use where to place answer
+        # is an label which tells the use where to place the answer
         self.quiz_entry_instructions_color = Label(self.quiz_frame,
                                   text="Please enter your answer above",
                                   font=("arial", "12"),
@@ -50,7 +50,7 @@ class Quiz():
                                   )
         self.quiz_entry_instructions_color.grid(row=3, padx=1, pady=1,)
 
-        # another label that explains stuff
+        # another label that explains how to start quiz
         self.quiz_instructions = Label(self.quiz_frame,
                                   text="Press start quiz to start answering questions!",
                                   font=("arial", "20"),
@@ -59,7 +59,7 @@ class Quiz():
                                   )
         self.quiz_instructions.grid(row=4)
 
-
+        # makes the frame all the buttons are stored in
         self.button_frame = Frame(self.quiz_frame,
                                 bg=background_color,)
         self.button_frame.grid()
@@ -74,7 +74,7 @@ class Quiz():
     def buttonswitch_right(self, case):
         button_details_list = [
             # text, color, command, row, column
-            # put your buttons features in this list.
+            # put your buttons features in list.
             ["results", "#aaaeff", lambda:print("not implemented yet"), "1"],
             ["finish", "#ffe600", lambda:self.buttonswitch_right("default"), "1"],
         ]
@@ -90,11 +90,11 @@ class Quiz():
                                         width=9,
                                         command=button_details_list[0][2]
                                         )
-                self.make_button.grid(row=0, column=1)
+                self.make_button.grid(padx=3, row=0, column=1)
                 
 
         elif case == "begin":
-        # this makes the finish button, it runs when the start buttons gets pressed
+        # makes the finish button, it runs when the start buttons gets pressed
                 self.make_button = Button(self.button_frame,
                                         text=button_details_list[1][0],
                                         bg=button_details_list[1][1],
@@ -103,14 +103,14 @@ class Quiz():
                                         width=9,
                                         command=button_details_list[1][2]
                                         )
-                self.make_button.grid(row=0, column=1)
+                self.make_button.grid(padx=3, row=0, column=1)
                 
 
 
     def buttonswitch_left(self, case):
         button_details_list = [
             # text, color, command, row, column
-            # put your buttons features in this list.
+            # put your buttons features in list.
             ["Start Quiz", "#00ff08", lambda:self.buttonswitch_left("begin"), "0"],
             ["Submit", "#00ff08", lambda:self.buttonswitch_left("end"), "0"],
             ["Submit", "#00ff08", lambda:print("sample text"), "0"],
@@ -127,11 +127,11 @@ class Quiz():
                                         width=9,
                                         command=button_details_list[0][2]
                                         )
-                self.make_button.grid(row=0, column=0)
+                self.make_button.grid(padx=3, row=0, column=0)
                 
 
         elif case == "begin":
-        # This makes the submit button when the start quiz button is pressed, it also creates the finish button
+        # makes the submit button when the start quiz button is pressed, it also creates the finish button
                 self.make_button = Button(self.button_frame,
                                         text=button_details_list[1][0],
                                         bg=button_details_list[1][1],
@@ -140,13 +140,14 @@ class Quiz():
                                         width=9,
                                         command=button_details_list[1][2]
                                         )
-                self.make_button.grid(row=0, column=0)
+                self.make_button.grid(padx=3, row=0, column=0)
 
                 self.buttonswitch_right("begin")
                 
 
         elif case == "end":
-    #actually turns the variables into buttons
+        # disables the submit button when the submit button is pressed, signals end of quiz
+        # ill make it so that only triggers at the last question
             self.make_button = Button(self.button_frame,
                                     text=button_details_list[2][0],
                                     bg=button_details_list[2][1],
@@ -156,7 +157,7 @@ class Quiz():
                                     state="disabled",
                                     command=button_details_list[2][2]
                                     )
-            self.make_button.grid(row=0, column=0)
+            self.make_button.grid(padx=3, row=0, column=0)
             
                 
 
