@@ -1,7 +1,24 @@
 """
 This is where the questions and answers are, put them in the quotes.
 """
+Questions = [
+    'how many apples in a dozen apples',
+    'What is the color of the sky on a clear day?',
+    'How many legs does a dog have?',
+    'What is 2 + 2?',
+    'What do you call the frozen form of water?',
+    'What is the opposite of "hot"?',
+    'What animal goes "meow"?',
+    'What fruit is typically red and often associated with doctors?',
+    'How many days are in a week?',
+    'What is the first letter of the alphabet?'
+]
 
+
+
+
+"""
+old question variables
 Q1 = 'how many apples in a dozen apples'
 Q2 = 'What is the color of the sky on a clear day?'
 Q3 = 'How many legs does a dog have?'
@@ -12,6 +29,7 @@ Q7 = 'What animal goes "meow"?'
 Q8 = 'What fruit is typically red and often associated with doctors?'
 Q9 = 'How many days are in a week?'
 Q10 = 'What is the first letter of the alphabet?'
+"""
 
 A1 = ['12', 'twelve', '1', 'one']
 A2 = ['blue']

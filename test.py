@@ -1,30 +1,73 @@
-import tkinter as tk
+from tkinter import *
+from time import *
+import questions as q
+class Quiz():
+    
+    """
+    This tool is used to quiz people on stuff, it take the questions and
+    answers from 'questions.py'
+    """
+    def __init__(self):
+        # this variable is the color grey used for the backround
+        # makes it so you can change every widgets backround color
+        # at the same time.
+        background_color = "#b3b3b3"
+        
+        # this just sets the size of the window
+        root.geometry("360x300")
+        root.wm_attributes("-transparentcolor", 'grey') 
+        root.configure(bg=background_color)
 
-MyWindow = tk.Tk()
-MyWindow.geometry("500x550")
+        # the frame holding the entire gui is created here
+        self.quiz_frame = Frame(padx=10, pady=10, bg=background_color)
+        self.quiz_frame.grid()
 
-#create LabelFrame (200x200)
-label = tk.LabelFrame(MyWindow, width=200, height=200)
+        # the heading is made here
+        self.quiz_heading = Label(self.quiz_frame,
+                                  text="Quiz Program",
+                                  font=("arial", "32"),
+                                  bg=background_color,
+                                  )
+        self.quiz_heading.grid(row=0)
+        
+        # the entrybox where you put in your answer is here
+        self.quiz_entry = Entry(self.quiz_frame,
+                                  font=("Arial", "38"),
+                                  width=(12),
+                                  )
+        self.quiz_entry.grid(row=2, padx=1, pady=1)
+        
+        self.quiz_entry_instructions_shadow = Label(self.quiz_frame,
+                                  text="Please enter your answer above",
+                                  font=("arial", "14"),
+                                  bg="transparent",
+                                  )
+        self.quiz_entry_instructions_shadow.place(x=30, y=120)
 
-#grid manager to set label localization
-label.grid(row=0, column=0)
+        self.quiz_entry_instructions_color = Label(self.quiz_frame,
+                                  text="Please enter your answer above",
+                                  font=("arial", "14"),
+                                  fg="#FFFF00",
+                                  bg=background_color,
+                                  )
+        self.quiz_entry_instructions_color.place(x=5, y=0, in_=self.quiz_entry_instructions_shadow)
+        # this is the end of the entry instructions frame
 
-#label row and column configure: first argument is col or row id
-label.grid_rowconfigure(0, weight=1)
-label.grid_columnconfigure(0, weight=1)
+        #
+        self.quiz_instructions = Label(self.quiz_frame,
+                                  text="blah",
+                                  font=("arial", "32"),
+                                  bg=background_color,
+                                  )
+        self.quiz_instructions.grid(row=4, pady=30)
 
-#cancel propagation
-label.grid_propagate(False)
+        
 
-#Create button and set it localization. You can change it font without changing size of button, but if You set too big not whole will be visible
-button = tk.Button(label, text="Hello!", font=('Helvetica', '20'))
-
-#Use sticky to button took up the whole label area
-button.grid(row=0, column=0, sticky='nesw')
-
-MyWindow.mainloop()
-
-
-
-
-
+# main routine
+if __name__ == "__main__":
+    root = Tk()
+    root.title("Quiz")
+    
+    Quiz()
+    root.mainloop(
+    )

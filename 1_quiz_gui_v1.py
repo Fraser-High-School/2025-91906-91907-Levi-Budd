@@ -51,8 +51,9 @@ class Quiz():
         self.quiz_entry_instructions_color.grid(row=3, padx=1, pady=1,)
 
         # another label that explains how to start quiz
+        question = "Press start quiz to start answering questions!"
         self.quiz_instructions = Label(self.quiz_frame,
-                                  text="Press start quiz to start answering questions!",
+                                  text=question,
                                   font=("arial", "20"),
                                   wraplength=250, width=20,
                                   bg=background_color,
@@ -75,7 +76,7 @@ class Quiz():
         button_details_list = [
             # text, color, command, row, column
             # put your buttons features in list.
-            ["results", "#aaaeff", lambda:print("not implemented yet"), "1"],
+            ["results", "#aaaeff", lambda:self.question_answer(), "1"],
             ["finish", "#ffe600", lambda:self.buttonswitch_right("default"), "1"],
         ]
         self.button_ref_list = []
@@ -160,7 +161,11 @@ class Quiz():
             self.make_button.grid(padx=3, row=0, column=0)
             
                 
-
+    def question_answer(self):
+          for question in q.Questions:
+                self.quiz_instructions.config(text=question, fg="#9C0000")
+                
+    
         
 
 # main routine
