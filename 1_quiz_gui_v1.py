@@ -54,8 +54,8 @@ class Quiz():
         question = "Press start quiz to start answering questions!"
         self.quiz_instructions = Label(self.quiz_frame,
                                   text=question,
-                                  font=("arial", "20"),
-                                  wraplength=250, width=20,
+                                  font=("arial", "22"),
+                                  wraplength=350, width=20,
                                   bg=background_color,
                                   )
         self.quiz_instructions.grid(row=4)
@@ -76,35 +76,27 @@ class Quiz():
         button_details_list = [
             # text, color, command, row, column
             # put your buttons features in list.
-            ["results", "#aaaeff", lambda:self.question_answer(), "1"],
-            ["finish", "#ffe600", lambda:self.buttonswitch_right("default"), "1"],
+            ["results", "#aaaeff", lambda:print("take to results page"), "normal"],
+            ["finish", "#ffe600", lambda:print("tell results"), "normal"],
         ]
-        self.button_ref_list = []
+        self.right_button_ref_list = []
 
         if case == "default":
-        #creates the default button that appears on program startup
-                self.make_button = Button(self.button_frame,
-                                        text=button_details_list[0][0],
-                                        bg=button_details_list[0][1],
-                                        fg="#000000",
-                                        font=("Arial", "20", "bold"),
-                                        width=9,
-                                        command=button_details_list[0][2]
-                                        )
-                self.make_button.grid(padx=3, row=0, column=1)
-                
+                state = 0
+        elif case == "finish":
+                state = 1
 
-        elif case == "begin":
-        # makes the finish button, it runs when the start buttons gets pressed
-                self.make_button = Button(self.button_frame,
-                                        text=button_details_list[1][0],
-                                        bg=button_details_list[1][1],
-                                        fg="#000000",
-                                        font=("Arial", "20", "bold"),
-                                        width=9,
-                                        command=button_details_list[1][2]
-                                        )
-                self.make_button.grid(padx=3, row=0, column=1)
+        self.make_button = Button(self.button_frame,
+                                text=button_details_list[state][0],
+                                bg=button_details_list[state][1],
+                                fg="#000000",
+                                font=("Arial", "20", "bold"),
+                                width=9,
+                                state=button_details_list[state][3],
+                                command=button_details_list[state][2]
+                                )
+        self.make_button.grid(padx=3, row=0, column=1)
+        self.right_button_ref_list.append(self.make_button)
                 
 
 
@@ -112,58 +104,59 @@ class Quiz():
         button_details_list = [
             # text, color, command, row, column
             # put your buttons features in list.
-            ["Start Quiz", "#00ff08", lambda:self.buttonswitch_left("begin"), "0"],
-            ["Submit", "#00ff08", lambda:self.buttonswitch_left("end"), "0"],
-            ["Submit", "#00ff08", lambda:print("sample text"), "0"],
+            ["Start Quiz", "#00ff08", lambda:self.buttonswitch_left("begin"), "normal"],
+            ["Submit", "#00ff08", lambda:self.question_answer(), "normal"],
+            ["Submit", "#00ff08", lambda:print("sample text"), "disabled"],
         ]
-        self.button_ref_list = []
-
+        self.left_button_ref_list = []
+        counter = 0
         if case == "default":
-        #creates the default start quiz button that appears on program startup
-                self.make_button = Button(self.button_frame,
-                                        text=button_details_list[0][0],
-                                        bg=button_details_list[0][1],
-                                        fg="#000000",
-                                        font=("Arial", "20", "bold"),
-                                        width=9,
-                                        command=button_details_list[0][2]
-                                        )
-                self.make_button.grid(padx=3, row=0, column=0)
-                
-
+                state = 0
         elif case == "begin":
-        # makes the submit button when the start quiz button is pressed, it also creates the finish button
-                self.make_button = Button(self.button_frame,
-                                        text=button_details_list[1][0],
-                                        bg=button_details_list[1][1],
-                                        fg="#000000",
-                                        font=("Arial", "20", "bold"),
-                                        width=9,
-                                        command=button_details_list[1][2]
-                                        )
-                self.make_button.grid(padx=3, row=0, column=0)
-
-                self.buttonswitch_right("begin")
-                
-
+                self.buttonswitch_right("finish")
+                state = 1
         elif case == "end":
-        # disables the submit button when the submit button is pressed, signals end of quiz
-        # ill make it so that only triggers at the last question
-            self.make_button = Button(self.button_frame,
-                                    text=button_details_list[2][0],
-                                    bg=button_details_list[2][1],
-                                    fg="#000000",
-                                    font=("Arial", "20", "bold"),
-                                    width=9,
-                                    state="disabled",
-                                    command=button_details_list[2][2]
-                                    )
-            self.make_button.grid(padx=3, row=0, column=0)
-            
+                self.buttonswitch_right("default")
+                state = 2
+
+        self.make_button = Button(self.button_frame,
+                                text=button_details_list[state][0],
+                                bg=button_details_list[state][1],
+                                fg="#000000",
+                                font=("Arial", "20", "bold"),
+                                width=9,
+                                state=button_details_list[state][3],
+                                command=button_details_list[state][2]
+                                )
+        self.make_button.grid(padx=3, row=0, column=0)
+
+        self.left_button_ref_list.append(self.make_button)
                 
+
+    counter = 0
+    length = len(q.Questions)
     def question_answer(self):
-          for question in q.Questions:
+            if self.counter < self.length:
+                question = q.Questions[self.counter]
+                self.counter += 1
                 self.quiz_instructions.config(text=question, fg="#9C0000")
+                
+                print(self.left_button_ref_list[0])
+                
+                print(question)
+                
+            elif self.counter >= self.length:
+                self.buttonswitch_left("end")
+
+
+
+                #self.left_button_ref_list[0].config(command=self.question_answer())
+                
+
+
+            
+            
+          
                 
     
         
