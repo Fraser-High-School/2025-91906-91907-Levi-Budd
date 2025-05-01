@@ -22,6 +22,8 @@ class Quiz():
         root.wm_attributes("-transparentcolor", 'grey') 
         root.configure(bg=background_color)
 
+
+
         # the frame holding the entire gui is created here
         self.quiz_frame = Frame(padx=10, pady=10, bg=background_color)
         self.quiz_frame.grid()
@@ -55,7 +57,7 @@ class Quiz():
         self.quiz_instructions = Label(self.quiz_frame,
                                   text=question,
                                   font=("arial", "22"),
-                                  wraplength=350, width=20,
+                                  wraplength=350, width=20, height=3,
                                   bg=background_color,
                                   )
         self.quiz_instructions.grid(row=4)
@@ -63,7 +65,7 @@ class Quiz():
         # makes the frame all the buttons are stored in
         self.button_frame = Frame(self.quiz_frame,
                                 bg=background_color,)
-        self.button_frame.grid()
+        self.button_frame.grid(sticky="ew")
 
         # These two functions start the buttons up, case is set as default to make
         # the base buttons.
@@ -71,7 +73,8 @@ class Quiz():
         self.buttonswitch_right("default")
         
 
-
+    # this functions creates the right button, and switches it to the next button depending on the
+    # variables in the list.
     def buttonswitch_right(self, case):
         button_details_list = [
             # text, color, command, row, column
@@ -81,6 +84,8 @@ class Quiz():
         ]
         self.right_button_ref_list = []
 
+        # this else if statement tells the program which button to create
+        # depending on the case variable.
         if case == "default":
                 state = 0
         elif case == "finish":
@@ -99,17 +104,26 @@ class Quiz():
         self.right_button_ref_list.append(self.make_button)
                 
 
+    # the create_submit and start_QA functions are used
+    # to let the start quiz button do two things, start the quiz and create the submit button.
+    def create_submit(self):
+          self.buttonswitch_left("begin")
 
+    def start_QA(self):
+          self.question_answer()
+
+
+    # this functions creates the left button, and switches it to the next button depending on the
+    # variables in the list.
     def buttonswitch_left(self, case):
         button_details_list = [
             # text, color, command, row, column
             # put your buttons features in list.
-            ["Start Quiz", "#00ff08", lambda:self.buttonswitch_left("begin"), "normal"],
+            ["Start Quiz", "#00ff08", lambda: [self.create_submit(), self.question_answer()], "normal"],
             ["Submit", "#00ff08", lambda:self.question_answer(), "normal"],
             ["Submit", "#00ff08", lambda:print("sample text"), "disabled"],
         ]
         self.left_button_ref_list = []
-        counter = 0
         if case == "default":
                 state = 0
         elif case == "begin":
@@ -132,25 +146,67 @@ class Quiz():
 
         self.left_button_ref_list.append(self.make_button)
                 
-
+    # these variables are used to keep track of the question number and the length of the question list.
+    # they have to be set outside of the function so they arent reset every time the function is called.
     counter = 0
     length = len(q.Questions)
+
     def question_answer(self):
+            #this checks if the counter (amount of questions answered) is less than the length of the question list.
+            # if it is, it will show the next question and continue the quiz,
+            # otherwise it will disable the submit button and end the quiz.
             if self.counter < self.length:
                 question = q.Questions[self.counter]
                 self.counter += 1
                 self.quiz_instructions.config(text=question, fg="#9C0000")
                 
-                print(self.left_button_ref_list[0])
-                
-                print(question)
-                
+                # this statement check wether the answer is correct or not, assuming that the counter is above 1
+                # so that it doesnt run when the quiz is first started.
+                if self.counter > 1:
+                    print("a")
+                    answer = self.quiz_entry.get().lower()
+                    self.quiz_entry.delete(0, END)
+                    if self.counter == 2:
+                          correct_answer = q.A1
+                    elif self.counter == 3:
+                          correct_answer = q.A2
+                    elif self.counter == 4:
+                          correct_answer = q.A3
+                    elif self.counter == 5:
+                          correct_answer = q.A4
+                    elif self.counter == 6:
+                          correct_answer = q.A5
+                    elif self.counter == 7:
+                          correct_answer = q.A6
+                    elif self.counter == 8:
+                          correct_answer = q.A7
+                    elif self.counter == 9:
+                          correct_answer = q.A8
+                    elif self.counter == 10:
+                          correct_answer = q.A9
+                    elif self.counter == 11:
+                          correct_answer = q.A10
+
+                    # this just changes the text depending on if the answer is correct or not.
+                    if answer in correct_answer:
+                        print("correct!")
+                        self.quiz_entry_instructions_color.config(text="Correct!", fg="#00ff08")
+                    else:
+                        print("incorrect!")
+                        self.quiz_entry_instructions_color.config(text="Incorrect!", fg="#ff0000")
+                  
+                    
+
+            # the aformentioned elif statement that disables the submit button and ends the quiz.
             elif self.counter >= self.length:
                 self.buttonswitch_left("end")
+                self.quiz_entry.config(state=DISABLED)
+                self.quiz_entry_instructions_color.config(text="Quiz Finished! go to results page for results!", fg="#ff0000")
 
 
 
                 #self.left_button_ref_list[0].config(command=self.question_answer())
+            
                 
 
 

@@ -17,21 +17,9 @@ Questions = [
 
 
 
-"""
-old question variables
-Q1 = 'how many apples in a dozen apples'
-Q2 = 'What is the color of the sky on a clear day?'
-Q3 = 'How many legs does a dog have?'
-Q4 = 'What is 2 + 2?'
-Q5 = 'What do you call the frozen form of water?'
-Q6 = 'What is the opposite of "hot"?'
-Q7 = 'What animal goes "meow"?'
-Q8 = 'What fruit is typically red and often associated with doctors?'
-Q9 = 'How many days are in a week?'
-Q10 = 'What is the first letter of the alphabet?'
-"""
 
-A1 = ['12', 'twelve', '1', 'one']
+
+A1 = ['12', 'twelve', '1', 'one', 'dozen', 'a dozen']
 A2 = ['blue']
 A3 = ['4', 'four']
 A4 = ['4', 'four',]
