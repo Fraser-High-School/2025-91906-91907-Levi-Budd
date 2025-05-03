@@ -205,8 +205,7 @@ class Quiz():
 
 
 
-                #self.left_button_ref_list[0].config(command=self.question_answer())
-            
+
                 
 
 
