@@ -182,6 +182,7 @@ class Quiz():
             # the aformentioned elif statement that disables the submit button and ends the quiz.
             elif self.counter >= self.length:
                 self.buttonswitch_left("end")
+                # may remove self.openresults() here. idk
                 self.open_results()
                 self.quiz_entry.config(state=DISABLED)
                 self.quiz_entry_instructions_color.config(text="Quiz Finished! go to results page for results!", fg="#00FFFF")
