@@ -9,7 +9,7 @@ class Quiz():
     tool is used to quiz people using the questions and answers set by the operator,
     it takes the questions and answers from 'questions.py'
     """
-    def __init__(self):
+    def __init__(self, root):
         # backround_color variable is the color grey used for the backround
         # makes it so you can change every widgets backround color
         # at the same time.
@@ -21,12 +21,14 @@ class Quiz():
         root.geometry("360x300")
         root.wm_attributes("-transparentcolor", 'grey') 
         root.configure(bg=background_color)
+       
 
-
+        
 
         # the frame holding the entire gui is created here
         self.quiz_frame = Frame(padx=10, pady=10, bg=background_color)
         self.quiz_frame.grid()
+
 
         # the heading is made here
         self.quiz_heading = Label(self.quiz_frame,
@@ -79,7 +81,7 @@ class Quiz():
         button_details_list = [
             # text, color, command, row, column
             # put your buttons features in list.
-            ["results", "#aaaeff", lambda:print("take to results page"), "normal"],
+            ["results", "#aaaeff", lambda: self.open_results(), "normal"],
             ["finish", "#ffe600", lambda:print("tell results"), "normal"],
         ]
         self.right_button_ref_list = []
@@ -102,15 +104,11 @@ class Quiz():
                                 )
         self.make_button.grid(padx=3, row=0, column=1)
         self.right_button_ref_list.append(self.make_button)
-                
-
-    # the create_submit and start_QA functions are used
-    # to let the start quiz button do two things, start the quiz and create the submit button.
-    def create_submit(self):
-          self.buttonswitch_left("begin")
-
-    def start_QA(self):
-          self.question_answer()
+    
+    def open_results(self):
+          Results = ResultsWindow(root)
+          
+          #ResultsWindow.destroy()
 
 
     # this functions creates the left button, and switches it to the next button depending on the
@@ -119,7 +117,7 @@ class Quiz():
         button_details_list = [
             # text, color, command, row, column
             # put your buttons features in list.
-            ["Start Quiz", "#00ff08", lambda: [self.create_submit(), self.question_answer()], "normal"],
+            ["Start Quiz", "#00ff08", lambda: [self.buttonswitch_left("begin"), self.question_answer()], "normal"],
             ["Submit", "#00ff08", lambda:self.question_answer(), "normal"],
             ["Submit", "#00ff08", lambda:print("sample text"), "disabled"],
         ]
@@ -151,11 +149,14 @@ class Quiz():
     counter = 0
     length = len(q.Questions)
 
+    
+
     def question_answer(self):
             #this checks if the counter (amount of questions answered) is less than the length of the question list.
             # if it is, it will show the next question and continue the quiz,
             # otherwise it will disable the submit button and end the quiz.
             if self.counter < self.length:
+                root.bind('<Return>', lambda event: self.question_answer())
                 question = q.Questions[self.counter]
                 self.counter += 1
                 self.quiz_instructions.config(text=question, fg="#9C0000")
@@ -163,30 +164,11 @@ class Quiz():
                 # this statement check wether the answer is correct or not, assuming that the counter is above 1
                 # so that it doesnt run when the quiz is first started.
                 if self.counter > 1:
-                    print("a")
                     answer = self.quiz_entry.get().lower()
                     self.quiz_entry.delete(0, END)
-                    if self.counter == 2:
-                          correct_answer = q.A1
-                    elif self.counter == 3:
-                          correct_answer = q.A2
-                    elif self.counter == 4:
-                          correct_answer = q.A3
-                    elif self.counter == 5:
-                          correct_answer = q.A4
-                    elif self.counter == 6:
-                          correct_answer = q.A5
-                    elif self.counter == 7:
-                          correct_answer = q.A6
-                    elif self.counter == 8:
-                          correct_answer = q.A7
-                    elif self.counter == 9:
-                          correct_answer = q.A8
-                    elif self.counter == 10:
-                          correct_answer = q.A9
-                    elif self.counter == 11:
-                          correct_answer = q.A10
-
+                    
+                    correct_answer = q.Answers[self.counter-2]
+                    
                     # this just changes the text depending on if the answer is correct or not.
                     if answer in correct_answer:
                         print("correct!")
@@ -200,8 +182,28 @@ class Quiz():
             # the aformentioned elif statement that disables the submit button and ends the quiz.
             elif self.counter >= self.length:
                 self.buttonswitch_left("end")
+                self.open_results()
                 self.quiz_entry.config(state=DISABLED)
-                self.quiz_entry_instructions_color.config(text="Quiz Finished! go to results page for results!", fg="#ff0000")
+                self.quiz_entry_instructions_color.config(text="Quiz Finished! go to results page for results!", fg="#00FFFF")
+
+
+class ResultsWindow():
+      def __init__(self, parent):
+            self.results_window = Toplevel(parent)
+            self.results_window.title("Results")
+            self.results_window.geometry("360x450")
+            self.results_window.configure(bg=background_color)
+
+            self.results_frame = Frame(padx=10, pady=10, bg=background_color, master=self.results_window)
+            self.results_frame.grid()
+            
+            self.results_heading = Label(self.results_frame,
+                                  text="Results",
+                                  font=("arial", "25"),
+                                  bg=background_color,
+                                  )            
+            self.results_heading.grid(row=0)
+
 
 
 
@@ -221,6 +223,6 @@ if __name__ == "__main__":
     root = Tk()
     root.title("Quiz")
     
-    Quiz()
+    Quiz(root)
     root.mainloop(
     )

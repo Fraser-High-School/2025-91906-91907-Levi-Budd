@@ -13,19 +13,15 @@ Questions = [
     'How many days are in a week?',
     'What is the first letter of the alphabet?'
 ]
-
-
-
-
-
-
-A1 = ['12', 'twelve', '1', 'one', 'dozen', 'a dozen']
-A2 = ['blue']
-A3 = ['4', 'four']
-A4 = ['4', 'four',]
-A5 = ['ice', 'the frozen form of water']
-A6 = ['cold', "toh"]
-A7 = ['cat', 'cats', 'human', 'humans']
-A8 = ['apple', 'apples']
-A9 = ['7', 'seven']
-A10 = ['a', 't']
+Answers = [
+    ['12', 'twelve', '1', 'one', 'dozen', 'a dozen'],
+    ['blue'],
+    ['4', 'four'],
+    ['4', 'four'],
+    ['ice', 'the frozen form of water'],
+    ['cold', "toh"],
+    ['cat', 'cats', 'human', 'humans'],
+    ['apple', 'apples'],
+    ['7', 'seven'],
+    ['a', 't']
+]
