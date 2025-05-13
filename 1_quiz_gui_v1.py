@@ -4,6 +4,8 @@ from tkinter import *
 from time import time, strftime, localtime
 import time
 import questions as q
+# os is imported to open the results file
+import os
 class Quiz():
     
     """
@@ -14,8 +16,16 @@ class Quiz():
 
     # results will hold all the data, this includes time taken, date, questions answered, and correct answers.
     results = []
+    # these track time and date.
     start_time = 0.0
     start_date = ""
+    # these variables are used to keep track of the question number and the length of the question list.
+    # they have to be set outside of the function so they arent reset every time the function is called.
+    counter = 0
+    length = len(q.Questions)
+    correct = 0
+    incorrect = 0
+    early_finish = False
    
 
     def __init__(self, root):
@@ -31,8 +41,6 @@ class Quiz():
         root.wm_attributes("-transparentcolor", 'grey') 
         root.configure(bg=background_color)
        
-        
-        
 
         # the frame holding the entire gui is created here
         self.quiz_frame = Frame(padx=10, pady=10, bg=background_color)
@@ -78,6 +86,8 @@ class Quiz():
                                 bg=background_color,)
         self.button_frame.grid(sticky="ew")
 
+        
+
         # These two functions start the buttons up, case is set as default to make
         # the base buttons.
         self.buttonswitch_left("default")
@@ -91,17 +101,17 @@ class Quiz():
             # text, color, command, row, column
             # put your buttons features in list.
             ["results", "#aaaeff", lambda: self.open_results(), "normal"],
-            ["finish", "#ffe600", lambda:print("tell results"), "normal"],
+            ["finish", "#ffe600", lambda: [setattr(self, "early_finish", True), self.buttonswitch_left("end")], "normal"],
         ]
         self.right_button_ref_list = []
 
-        # this else if statement tells the program which button to create
-        # depending on the case variable.
+        # this else if statement tells the function which button to create depending on the case variable.
         if case == "default":
                 state = 0
         elif case == "finish":
                 state = 1
-
+                root.unbind('<Return>')
+        # this statement creates the button depending on the state variable.
         self.make_button = Button(self.button_frame,
                                 text=button_details_list[state][0],
                                 bg=button_details_list[state][1],
@@ -114,8 +124,6 @@ class Quiz():
         self.make_button.grid(padx=3, row=0, column=1)
         self.right_button_ref_list.append(self.make_button)
     
-    def open_results(self):
-          Results_window = ResultsWindow(root)
           
     # this functions creates the left button, and switches it to the next button depending on the
     # variables in the list.
@@ -125,21 +133,26 @@ class Quiz():
             # put your buttons features in list.
             ["Start Quiz", "#00ff08", lambda: [self.buttonswitch_left("begin"), self.question_answer()], "normal"],
             ["Submit", "#00ff08", lambda:self.question_answer(), "normal"],
-            ["Submit", "#00ff08", lambda:print("sample text"), "disabled"],
+            ["Submit", "#00ff08", lambda:print("how did you press this??"), "disabled"],
         ]
         self.left_button_ref_list = []
+
+        # this else if statement tells the function which button to create depending on the case variable.
         if case == "default":
                 state = 0
         elif case == "begin":
                 self.buttonswitch_right("finish")
                 state = 1
-
+                # when the quiz is started, start_time is set to the current time.
+                self.start_time = time.time()
         elif case == "end":
                 self.buttonswitch_right("default")
                 state = 2
-                self.start_time = time.time()
+                # grab the current time and date for the end of the quiz.
                 self.start_date = strftime("%Y-%m-%d %H:%M:%S", localtime())
-                self.write_to_file(self.results)
+                self.write_to_file(self. results)
+        
+        # this statement creates the button depending on the state variable.
         self.make_button = Button(self.button_frame,
                                 text=button_details_list[state][0],
                                 bg=button_details_list[state][1],
@@ -152,11 +165,13 @@ class Quiz():
         self.make_button.grid(padx=3, row=0, column=0)
 
         self.left_button_ref_list.append(self.make_button)
+
+
+    # this function makes the results window
+    def open_results(self):
+        Results_window = ResultsWindow(root)
                 
-    # these variables are used to keep track of the question number and the length of the question list.
-    # they have to be set outside of the function so they arent reset every time the function is called.
-    counter = 0
-    length = len(q.Questions)
+
 
     
 
@@ -169,6 +184,7 @@ class Quiz():
                 # Bind Enter key to submit the answer.
                 # i do this here so that it only binds when the quiz is actually started.
                 root.bind('<Return>', lambda event: self.question_answer())
+                
 
                 if self.counter == 0:
                     self.start_taken_time = time.time()
@@ -193,16 +209,16 @@ class Quiz():
                     correct_answer = q.Answers[counter_less_1]
                     end_taken_time = time.time()
                     
+
                     # this just changes the text depending on if the answer is correct or not.
                     if answer in correct_answer:
-                        print("correct!")
                         self.quiz_entry_instructions_color.config(text="Correct!", fg="#00ff08")
-                        data_list.append(["right"])
+                        data_list.append(["correct"])
+                        self.correct += 1
                     else:
-                        print("incorrect!")
                         self.quiz_entry_instructions_color.config(text="Incorrect!", fg="#ff0000")
-                        data_list.append(["wrong"])
-
+                        data_list.append(["incorrect"])
+                        self.incorrect += 1
                     elapsed_time = end_taken_time - self.start_taken_time
                     minutes = int(elapsed_time // 60)
                     seconds = round(elapsed_time % 60, 2)
@@ -212,7 +228,6 @@ class Quiz():
                     self.results.append(data_list)
                     self.start_taken_time = time.time()
                     print(data_list)
-                    print(seconds)
 
                 # increment counter by 1 to move to the next question
                 self.counter += 1
@@ -227,6 +242,8 @@ class Quiz():
                 self.open_results()
                 self.quiz_entry.config(state=DISABLED)
                 self.quiz_entry_instructions_color.config(text="Quiz Finished! go to results page for results!", fg="#00FFFF")
+                #i unbind the enter key so you cant keep calling the function after the quiz is finished.
+                root.unbind('<Return>')
 
     def write_to_file(self, data):
         with open("results.txt", "a") as r:
@@ -235,42 +252,47 @@ class Quiz():
             elapsed_time = end_time - self.start_time
             elapsed_minutes = int(elapsed_time // 60)
             elapsed_seconds = round(elapsed_time % 60, 2)
-            print(elapsed_minutes, elapsed_seconds)
             date = self.start_date
 
             
             
             r.write(f"""
+-------------------------------------------TEST RESULTS----------------------------------------------------------
 Name: placeholder
 Test started: {date}
 The formatting is as follows:
 Question Number : Question Text : Given Answer : Correct or Wrong : minutes : seconds
-""")
+""")        
+            
             tracker = self.counter + 1  # Adjust for 0-based index
             for tracker in range(len(data)):
                 # tracker = tracker - 1  # Adjust for 0-based index
                 question_number = data[tracker][0]  # Question number (start from 0)
                 question_text = data[tracker][1]  # Question text
                 given_answer = data[tracker][2]  # Given answer
-                correctness = data[tracker][3]  # "wrong" or "right" based on logic
-                minutes = data[tracker][4]  # Elapsed time in minutes
-                seconds = data[tracker][5]  # Elapsed time in seconds
+                correctness = data[tracker][3]  # "incorrect" or "correct" based on logic
+                minutes = data[tracker][4]  # Elapsed time in minutes per question
+                seconds = data[tracker][5]  # Elapsed time in seconds per question
 
                 # Write the formatted data to the results file
                 r.write(f"""
 {question_number} : {question_text} : {given_answer} : {correctness} : {minutes} : {seconds}
-""")
-            
+""")        
+            early_finish_text = ""
+            if self.early_finish == True:
+                 early_finish_text = "Quiz was finished early."
             r.write(f"""
 
 Test Finished in: {elapsed_minutes} minutes and {elapsed_seconds} seconds.
+{early_finish_text}
 
--------------------------------------------TEST RESULTS----------------------------------------------------------
 """)
             r.close
-            # create things for results here 
-            # 26/03:  6/10 Questions Correct.
-            # with open("IGNORE.txt", "a") as r:
+            with open("summary_results.txt", "a") as r 
+                sum_date = strftime("%m-%d", localtime())
+                r.write(f"""{sum_date}: {self.correct}/{self.length} Questions Correct.\n""")
+                
+            
 
 class ResultsWindow():
       def __init__(self, parent):
@@ -312,8 +334,12 @@ class ResultsWindow():
             
             # Define a method to show results
             def show_results():
-                for i in range(5):
-                    self.results_list.insert(END, f"26/03:  6/10 Questions Correct.\n")
+                with open("summary_results.txt", "r") as r:
+                    lines = r.readlines()  # Read all lines from the file
+                    for i in range(min(5, len(lines))):  # Check the last 5 lines
+                        line = lines[-(i + 1)].strip()  # Access lines from the bottom up
+                        self.results_list.insert(END, line)  # Insert the line into the results_list
+
             
             # Call the method to insert the result
             show_results()
@@ -334,7 +360,7 @@ class ResultsWindow():
             # text, color, command, row, column
             # put your buttons features in this list.
             ["Back", "#f44336", lambda:self.results_window.destroy(), "0", "0"],
-            ["To File", "#aaaeff", lambda:print("sample txt"), "0", "1"],
+            ["To File", "#aaaeff", lambda: os.startfile("results.txt"), "0", "1"],
             ]
             self.button_ref_list = []
             #actually turns the variables into buttons
