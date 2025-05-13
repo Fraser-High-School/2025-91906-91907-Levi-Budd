@@ -288,7 +288,8 @@ Test Finished in: {elapsed_minutes} minutes and {elapsed_seconds} seconds.
 
 """)
             r.close
-            with open("summary_results.txt", "a") as r 
+            with open("summary_results.txt", "a") as r:
+ 
                 sum_date = strftime("%m-%d", localtime())
                 r.write(f"""{sum_date}: {self.correct}/{self.length} Questions Correct.\n""")
                 
