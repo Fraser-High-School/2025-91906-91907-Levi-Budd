@@ -186,71 +186,17 @@ class Quiz():
             # if it is, it will show the next question and continue the quiz,
             # otherwise it will disable the submit button and end the quiz.
             data_list = []
+
             if self.counter < self.length:
                 # Bind Enter key to submit the answer.
                 # i do this here so that it only binds when the quiz is actually started.
                 root.bind('<Return>', lambda event: self.question_answer())
-                
-
                 if self.counter == 0:
                     self.start_taken_time = time.time()
 
                 question = q.Questions[self.counter]
+                print(question)
                 self.quiz_instructions.config(text=question, fg="#9C0000")
-
-                
-
-
-
-                # this statement check wether the answer is correct or not, assuming that the counter is above 1
-                # so that it doesnt run when the quiz is first started.
-                if self.counter > 0:
-                    # counter_less_1 is used because lists start at 0, not 1.
-                    counter_less_1 = self.counter - 1
-                    # block below sets answer to lowercase, remove leading and trailing spaces, and limit to first 30 characters.
-                    answer = self.quiz_entry.get().strip().lower()
-                    answer = answer[0:self.answer_length]
-                    self.quiz_entry_instructions_color.config(text="Please enter your answer above", fg="#FFFF00")
-
-                    # appends the question number, question text, and answer to the data_list.
-                    data_list.append([self.counter, q.Questions[counter_less_1], answer])
-
-                    # this clears the entry box so you can enter the next answer, gets the correct answer.
-                    self.quiz_entry.delete(0, END)
-                    correct_answer = q.Answers[counter_less_1]
-                    
-                    # this block gets the time taken for the question, and appends it to the data_list.
-                    end_taken_time = time.time()
-                    
-
-                    # this just changes the text depending on if the answer is correct or not.
-                    # it also appends the correctness to the data_list.
-                    if answer in correct_answer:
-                        self.quiz_entry_instructions_color.config(text="Correct!", fg="#00ff08")
-                        data_list.append(["correct"])
-                        self.correct += 1
-                    else:
-                        self.quiz_entry_instructions_color.config(text="Incorrect!", fg="#ff0000")
-                        data_list.append(["incorrect"])
-                        self.incorrect += 1
-
-                    # math getting the time taken for the question.
-                    elapsed_time = end_taken_time - self.start_taken_time
-                    minutes = int(elapsed_time // 60)
-                    seconds = round(elapsed_time % 60, 2)
-
-                    # this appends the time taken to the data_list.
-                    data_list.append([minutes, seconds])
-                    data_list = sum(data_list, [])
-                    self.results.append(data_list)
-                    self.start_taken_time = time.time()
-                    print(data_list)
-
-                # increment counter by 1 to move to the next question
-                self.counter += 1
-                    
-                  
-                    
 
             # the aformentioned elif statement that disables the submit button and ends the quiz.
             elif self.counter >= self.length:
@@ -259,6 +205,60 @@ class Quiz():
                 self.open_results()
                 self.quiz_entry.config(state=DISABLED)
                 self.quiz_entry_instructions_color.config(text="Quiz Finished! go to results page for results!", fg="#00FFFF")
+
+
+
+            # this statement check wether the answer is correct or not, assuming that the counter is above 1
+            # so that it doesnt run when the quiz is first started.
+            if self.counter > 0:
+                # counter_less_1 is used because lists start at 0, not 1.
+                counter_less_1 = self.counter - 1
+                # block below sets answer to lowercase, remove leading and trailing spaces, and limit to first 30 characters.
+                answer = self.quiz_entry.get().strip().lower()
+                answer = answer[0:self.answer_length]
+                self.quiz_entry_instructions_color.config(text="Please enter your answer above", fg="#FFFF00")
+
+                # appends the question number, question text, and answer to the data_list.
+                data_list.append([self.counter, q.Questions[counter_less_1], answer])
+
+                # this clears the entry box so you can enter the next answer, gets the correct answer.
+                self.quiz_entry.delete(0, END)
+                correct_answer = q.Answers[counter_less_1]
+                
+                # this block gets the time taken for the question, and appends it to the data_list.
+                end_taken_time = time.time()
+                
+
+                # this just changes the text depending on if the answer is correct or not.
+                # it also appends the correctness to the data_list.
+                if answer in correct_answer:
+                    self.quiz_entry_instructions_color.config(text="Correct!", fg="#00ff08")
+                    data_list.append(["correct"])
+                    self.correct += 1
+                else:
+                    self.quiz_entry_instructions_color.config(text="Incorrect!", fg="#ff0000")
+                    data_list.append(["incorrect"])
+                    self.incorrect += 1
+
+                # math getting the time taken for the question.
+                elapsed_time = end_taken_time - self.start_taken_time
+                minutes = int(elapsed_time // 60)
+                seconds = round(elapsed_time % 60, 2)
+
+                # this appends the time taken to the data_list.
+                data_list.append([minutes, seconds])
+                data_list = sum(data_list, [])
+                self.results.append(data_list)
+                self.start_taken_time = time.time()
+                print(data_list)
+
+            # increment counter by 1 to move to the next question
+            self.counter += 1
+                    
+                  
+                    
+
+
 
 
     def write_to_file(self, data):
@@ -363,6 +363,8 @@ class ResultsWindow():
                 for i in range(min(5, len(lines))):  # Check the last 5 lines
                     line = lines[-(i + 1)].strip()  # Access lines from the bottom up
                     self.results_list.insert(END, line)  # Insert the line into the results_list
+                    if i >= 4:
+                         self.results_list.config(bg='#f6edab')
 
         
         # Call the method to insert the result

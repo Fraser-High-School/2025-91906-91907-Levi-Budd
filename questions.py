@@ -12,7 +12,7 @@ Questions = [
     "What animal goes 'meow'?",
     "What fruit's typically red and often associated with doctors?",
     "How many days are in a week?",
-    "What's the first letter of the alphabet?",
+    "What's the first letter of the alphabet?"
 ]
 Answers = [
     ["12", "twelve", "1", "one", "dozen", "a dozen"],
