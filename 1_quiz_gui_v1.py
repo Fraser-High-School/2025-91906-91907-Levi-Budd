@@ -50,7 +50,7 @@ class Quiz():
 
         # the frame holding the entire gui is created here
         self.quiz_frame = Frame(padx=10, pady=10, bg=background_color)
-        self.quiz_frame.grid(Fill=BOTH, expand=True)
+        self.quiz_frame.grid()
 
         
         # the heading is made here
