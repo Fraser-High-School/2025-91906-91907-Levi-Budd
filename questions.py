@@ -15,41 +15,14 @@ Questions = [
     "What's the first letter of the alphabet?"
 ]
 Answers = [
-    ["12", "twelve", "1", "one", "dozen", "a dozen"],
-    ["blue"],
-    ["4", "four"],
-    ["4", "four"],
-    ["ice", "the frozen form of water"],
-    ["cold", "toh"],
-    ["cat", "cats", "human", "humans"],
-    ["apple", "apples"],
-    ["7", "seven"],
-    ["a", "t"],
+    ["12", "twelve", "1", "one", "dozen", "a dozen", "a"],
+    ["blue", "a"],
+    ["4", "four", "a"],
+    ["4", "four", "a"],
+    ["ice", "the frozen form of water", "a"],
+    ["cold", "toh", "a"],
+    ["cat", "cats", "human", "humans", "a"],
+    ["apple", "apples", "a"],
+    ["7", "seven", "a"],
+    ["a", "t", "a"],
 ]
-
-"""
-Questions = [
-    "What's the main ingredient in guacamole?",
-    "What type of pasta's shaped like little rice grains?",
-    "Which fruit's known as the 'king of fruits'?",
-    "What's the primary ingredient in hummus?",
-    "What type of cheese's traditionally used on a Margherita pizza?",
-    "Which spice's known as the most expensive in the world?",
-    "What's the name of the French dish made of snails?",
-    "What's the main ingredient in tofu?",
-    "Which fruit's dried to make raisins?",
-    "What's the name of the Japanese dish made of raw fish and rice?",
-]
-Answers = [
-    ["avocado", "avocados"],
-    ["orzo"],
-    ["mango", "durian"],
-    ["chickpeas", "garbanzo beans"],
-    ["mozzarella"],
-    ["saffron"],
-    ["escargot"],
-    ["soybeans", "soy"],
-    ["grapes"],
-    ["sushi"],
-]
-"""
