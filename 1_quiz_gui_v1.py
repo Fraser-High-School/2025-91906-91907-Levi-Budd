@@ -6,40 +6,42 @@ import time
 import questions as q
 # os is imported to open the results file
 import os
+
 class Quiz():
     
     """
-    tool is used to quiz people using the questions and answers set by the operator,
+    this tool is used to quiz people using the questions and answers set by the operator,
     it takes the questions and answers from 'questions.py'
     """
-
-
-    # results will hold all the data, this includes time taken, date, questions answered, and correct answers.
-    results = []
-    # these track time and date.
-    start_time = 0.0
-    start_date = ""
-    # these variables are used to keep track of the variables to write to results.txt.
-    # they have to be set outside of the function so they arent reset every time the function is called.
-    counter = 0
-    length = len(q.Questions)
-    correct = 0
-    incorrect = 0
-    early_finish = False
-    name = ""
-    # these are to tell the program if the name has been said or not, and if it is done.
-    name_said = False
-    name_done = False
-    # channge answer_length to change the max length of the answer.
-    answer_length = 30
-   
-
+    
+    
     def __init__(self, root):
         # backround_color variable is the color grey used for the backround
         # makes it so you can change every widgets backround color
         # at the same time.
         global background_color
         background_color = "#b3b3b3"
+        # results will hold all the data, this includes time taken, date, questions answered, and correct answers.
+        self.results = []
+        # these track time and date.
+        self.start_time = 0.0
+        self.start_date = ""
+        # these variables are used to keep track of the variables to write to results.txt.
+        # they have to be set outside of the function so they arent reset every time the function is called.
+        self.counter = 0
+        self.length = len(q.Questions)
+        self.correct = 0
+        self.incorrect = 0
+        self.early_finish = False
+        self.name = ""
+        # these are to tell the program if the name has been said or not, and if it is done.
+        self.name_said = False
+        self.name_done = False
+        # change answer_length to change the max length of the answer
+        # this also affects max name length.
+        self.answer_length = 30
+
+        
         
         
         # sets the size of the window and its color
@@ -151,11 +153,13 @@ class Quiz():
                 state = 1
                 # when the quiz is started, start_time is set to the current time.
                 self.start_time = time.time()
+                # grab the current time and date for the end of the quiz.
+                self.start_date = strftime("%Y-%m-%d %H:%M:%S", localtime())
+                
+                
         elif case == "end":
                 self.buttonswitch_right("default")
                 state = 2
-                # grab the current time and date for the end of the quiz.
-                self.start_date = strftime("%Y-%m-%d %H:%M:%S", localtime())
                 
                 self.write_to_file(self. results)
                 # i unbind the enter key so you cant keep calling the function after the quiz is finished.
@@ -201,12 +205,11 @@ class Quiz():
                 if self.name_said == True:
                     # this is where the name is set, it is set to the entry box.
                     self.name = self.quiz_entry.get()
+                    self.name = self.name[0:self.answer_length]
                     self.quiz_entry.delete(0, END)
                     self.quiz_entry_instructions_color.config(text="Please enter your answer above", fg="#FFFF00")
                     self.quiz_instructions.config(text="Press start quiz to start answering questions!")
                     self.name_done = True
-                    
-                    pass
                 self.name_said = True
 
 
@@ -341,6 +344,7 @@ class ResultsWindow():
     """
 
     def __init__(self, parent):
+        
         self.results_window = Toplevel(parent)
         self.results_window.title("Results")
         self.results_window.geometry("360x425")
@@ -386,10 +390,16 @@ class ResultsWindow():
                     self.results_list.insert(END, line)  # Insert the line into the results_list
                     if i >= 4:
                          self.results_list.config(bg='#f6edab')
-
-        
-        # Call the method to insert the result
+                         
+        # Call the function to insert the result
         show_results()
+
+        def restart_quiz():
+            # Destroy all widgets in the root window to reset the GUI
+            for widget in root.winfo_children():
+                widget.destroy()
+            # Reinitialize the quiz GUI
+            Quiz(root)
 
         self.results_info = Label(self.results_frame,
                                 text="You can see more in-depth results (what questions were wrong specifically) by going to the file. If the box is yellow, then there are more results in the file than shown here.",                                       
@@ -406,7 +416,7 @@ class ResultsWindow():
         results_button_details_list = [
         # text, color, command, row, column
         # put your buttons features in this list.
-        ["Back", "#f44336", lambda:self.results_window.destroy(), "0", "0"],
+        ["Restart", "#f44336", lambda: restart_quiz(), "0", "0"],
         ["To File", "#aaaeff", lambda: os.startfile("results.txt"), "0", "1"],
         ]
         self.button_ref_list = []
