@@ -185,6 +185,16 @@ class Quiz():
     # this function makes the results window
     def open_results(self):
         Results_window = ResultsWindow(root)
+
+    def not_blank(self):
+        """
+        This function checks if the text is not blank, and returns True if it is not blank.
+        """
+        not_blank = bool(self.quiz_entry.get().strip())
+        if not_blank == True:
+             self.quiz_entry_instructions_color.config(text="this cannot be blank.", fg="#FF0000")
+        return not_blank
+        
                 
 
 
@@ -196,13 +206,23 @@ class Quiz():
             # if it is, it will show the next question and continue the quiz,
             # otherwise it will disable the submit button and end the quiz.
             data_list = []
-            
+            # if the entry box is blank, and its not the first go it will end the function and tell you it cant be blank
+            if not self.not_blank() and self.counter > 0:
+                        self.quiz_entry_instructions_color.config(text="this cannot be blank.", fg="#FF0000")
+                        return
 
 
             if self.counter == 0:
                 self.quiz_instructions.config(text="Please submit your name.")
+                # i bind the enter key so that you can press enter to submit your answer.
                 root.bind('<Return>', lambda event: self.question_answer())
+
                 if self.name_said == True:
+                    # if name is blank it ends the function and tells the user to enter a name.
+                    if not self.not_blank():
+                        self.quiz_entry_instructions_color.config(text="this cannot be blank.", fg="#FF0000")
+                        return
+                    
                     # this is where the name is set, it is set to the entry box.
                     self.name = self.quiz_entry.get()
                     self.name = self.name[0:self.answer_length]
@@ -214,20 +234,23 @@ class Quiz():
 
 
             if self.name_done == True:
+                
                 if self.counter < self.length:
                     # Bind Enter key to submit the answer.
                     # i do this here so that it only binds when the quiz is actually started.
                     if self.counter == 0:
                         self.start_taken_time = time.time()
+                    
 
                     question = q.Questions[self.counter]
                     self.quiz_instructions.config(text=question, fg="#9C0000")
-
-                # this statement check wether the answer is correct or not, assuming that the counter is above 1
-                # so that it doesnt run when the quiz is first started.
+                
                 if self.counter > 0:
+
+                    
                     # counter_less_1 is used because lists start at 0, not 1.
                     counter_less_1 = self.counter - 1
+                    
                     # block below sets answer to lowercase, remove leading and trailing spaces, and limit to first 30 characters.
                     answer = self.quiz_entry.get().strip().lower()
                     answer = answer[0:self.answer_length]
@@ -283,7 +306,8 @@ class Quiz():
 
 
 
-
+    # this function writes everything to the results.txt file
+    
     def write_to_file(self, data):
         with open("results.txt", "a") as r:
             # Loop through the data to write each question's details

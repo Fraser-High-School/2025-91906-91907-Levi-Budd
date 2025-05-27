@@ -16,7 +16,8 @@ Questions = [
 ]
 
 # This is where the answers are, put them in the quotes, add extra answers by separating them with a comma.
-
+# empty answers will be ignored, so don't put them in the quotes. use a word like "nothing" or "none" 
+# if you want to have an empty answer.
 Answers = [
     ["paris", "paris, france", "the city of paris"],
     ["william shakespeare", "shakespeare", "w. shakespeare"],
