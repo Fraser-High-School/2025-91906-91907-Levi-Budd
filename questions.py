@@ -1,7 +1,49 @@
 
+# random math questions generator
+import random
+difficulty = 2
+amount = 10
+
+signs = []
+Math_Answers = []
+Math_Questions = []
+operator = ['+', '-', '*', '/']
+def gen_questions():
+    for x in range(amount):
+        question = []
+        counter = 0
+        while counter < difficulty:
+            sign = operator[random.randint(0, 3)]
+            num1 = random.randint(1, 20)
+            if counter == difficulty - 1: 
+                component = f"{num1}"
+
+            else:
+                component = f"{num1} {sign} "
+
+            question.append(component)
+            
+            if counter == difficulty - 1:
+                finished_question = ''.join(question)
+                answer = eval(str(finished_question))
+                if answer.is_integer():
+                    Math_Answers.append(answer)
+                    Math_Questions.append(finished_question)
+                else:
+                    counter -= 1
+            counter += 1
+
+gen_questions()
+
+for x in range(len(Math_Questions)):
+    print(f"What is {Math_Questions[x]}")
+    print(f"Answer is {Math_Answers[x]}")
+print(len(Math_Questions))
+
+
+
+
 # This is where the questions and answers are, put them in the quotes.
-
-
 Questions = [
     "What is the capital city of France?",
     "Who wrote the play 'Romeo and Juliet'?",
