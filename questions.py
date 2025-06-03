@@ -1,7 +1,7 @@
 
 # random math questions generator
 import random
-difficulty = 2
+difficulty = 4
 amount = 10
 
 signs = []
@@ -29,16 +29,21 @@ def gen_questions():
                 if answer.is_integer():
                     Math_Answers.append(answer)
                     Math_Questions.append(finished_question)
+                    counter += 1
                 else:
-                    counter -= 1
-            counter += 1
+                    question = []
+                    answer = ""
+                    
+            
 
 gen_questions()
 
 for x in range(len(Math_Questions)):
+    print(x)
     print(f"What is {Math_Questions[x]}")
     print(f"Answer is {Math_Answers[x]}")
 print(len(Math_Questions))
+print(Math_Questions)
 
 
 
