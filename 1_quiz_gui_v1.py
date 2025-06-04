@@ -14,8 +14,23 @@ class Quiz():
     it takes the questions and answers from 'questions.py'
     """
     
-    
     def __init__(self, root):
+        # this sets the mode of the quiz
+        # mode 1: use randomly generated math questions
+        # mode 2: use the questions and answers from questions.py
+        self.mode = 1
+        # you can change the difficuty here, it is the number of numbers in the question,
+        # dificulty is the number of numbers in the question, so a difficulty of 4 would be 4 numbers and 3 signs
+        Difficulty = 2
+        # amount is the number of questions to generate, so if amount is 10, it will generate 10 questions
+        amount = 10
+        if self.mode == 1:
+            self.answers = q.Answers
+            self.questions = q.Questions
+        elif self.mode == 2:
+            self.answers = q.Math_Answers
+            self.questions = q.Math_Questions
+
         # backround_color variable is the color grey used for the backround
         # makes it so you can change every widgets backround color
         # at the same time.
@@ -29,7 +44,7 @@ class Quiz():
         # these variables are used to keep track of the variables to write to results.txt.
         # they have to be set outside of the function so they arent reset every time the function is called.
         self.counter = 0
-        self.length = len(q.Questions)
+        self.length = len(self.questions)
         self.correct = 0
         self.incorrect = 0
         self.early_finish = False
@@ -210,6 +225,13 @@ class Quiz():
             if not self.not_blank() and self.counter > 0:
                         self.quiz_entry_instructions_color.config(text="this cannot be blank.", fg="#FF0000")
                         return
+            if self.not_blank() and self.counter > 0 and self.mode == 2:
+                # if the mode is 2, it will check if the answer is a number, and if it is not, it will end the function and tell you it must be a number.
+                try:
+                    int(self.quiz_entry.get())
+                except ValueError:
+                    self.quiz_entry_instructions_color.config(text="this must be a number.", fg="#FF0000")
+                    return
 
 
             if self.counter == 0:
@@ -242,7 +264,7 @@ class Quiz():
                         self.start_taken_time = time.time()
                     
 
-                    question = q.Questions[self.counter]
+                    question = self.questions[self.counter]
                     self.quiz_instructions.config(text=question, fg="#9C0000")
                 
                 if self.counter > 0:
@@ -257,11 +279,15 @@ class Quiz():
                     self.quiz_entry_instructions_color.config(text="Please enter your answer above", fg="#FFFF00")
 
                     # appends the question number, question text, and answer to the data_list.
-                    data_list.append([self.counter, q.Questions[counter_less_1], answer])
+                    data_list.append([self.counter, self.questions[counter_less_1], answer])
 
                     # this clears the entry box so you can enter the next answer, gets the correct answer.
                     self.quiz_entry.delete(0, END)
-                    correct_answer = q.Answers[counter_less_1]
+                    if self.mode == 2:
+                         correct_answer = self.answers[counter_less_1]
+                    else:
+                         correct_answer = self.answers[counter_less_1]
+                    print(correct_answer)
 
                     # this block gets the time taken for the question, and appends it to the data_list.
                     end_taken_time = time.time()

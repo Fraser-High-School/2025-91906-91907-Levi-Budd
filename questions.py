@@ -1,49 +1,8 @@
 
 # random math questions generator
 import random
-difficulty = 4
-amount = 10
 
-signs = []
-Math_Answers = []
-Math_Questions = []
-operator = ['+', '-', '*', '/']
-def gen_questions():
-    for x in range(amount):
-        question = []
-        counter = 0
-        while counter < difficulty:
-            sign = operator[random.randint(0, 3)]
-            num1 = random.randint(1, 20)
-            if counter == difficulty - 1: 
-                component = f"{num1}"
 
-            else:
-                component = f"{num1} {sign} "
-
-            question.append(component)
-            
-            if counter == difficulty - 1:
-                finished_question = ''.join(question)
-                answer = eval(str(finished_question))
-                if answer.is_integer():
-                    Math_Answers.append(answer)
-                    Math_Questions.append(finished_question)
-                    counter += 1
-                else:
-                    question = []
-                    answer = ""
-                    
-            
-
-gen_questions()
-
-for x in range(len(Math_Questions)):
-    print(x)
-    print(f"What is {Math_Questions[x]}")
-    print(f"Answer is {Math_Answers[x]}")
-print(len(Math_Questions))
-print(Math_Questions)
 
 
 
@@ -115,3 +74,56 @@ Answers = [
     ["a", "t"],
 ]
 """
+
+# dificulty is the number of numbers in the question, so a difficulty of 4 would be 4 numbers and 3 signs
+difficulty = t.Difficulty
+# amount is the number of questions to generate, so if amount is 10, it will generate 10 questions
+amount = t.Amount
+
+# the lists to store the questions and answers
+Math_Answers = []
+Math_Questions = []
+# the list of operators to choose from
+# this can be expanded to include more operators if desired
+operator = ['+', '-', '*', '/']
+def gen_questions():
+    for i in range(amount):
+        # variables are set to default values for each question, 
+        counter = 0
+        question = []
+        answer = ""
+        finished_question = ""
+        while counter < difficulty:
+            # randomly select a sign and a number
+            sign = operator[random.randint(0, 3)]
+            num1 = random.randint(1, 20)
+
+            # if its the last number in the question, don't add a sign
+            if counter == difficulty - 1: 
+                component = f"{num1}"
+            # otherwise, add a sign
+            else:
+                component = f"{num1} {sign} "
+            # add the component to the question
+            question.append(component)
+            if counter == difficulty - 1:
+                # combine the question list into a string
+                finished_question = ''.join(question)
+
+                # evaluate the question to get the answer
+                answer = eval(str(finished_question))
+                # check if the answer is divisable into a integer (no stupid decimals)
+                # will append the question and answer to the lists if it is
+                if answer.is_integer():
+                    Math_Answers.append([str(answer)])
+                    Math_Questions.append(finished_question)
+                # if not, reset the question and answer variables
+                else:
+                    question = []
+                    answer = ""
+                    finished_question = ""
+                    # could not find a better way to reset the counter to 0 besides setting it to -1 so it is incremented to 0 at the end of the loop
+                    counter = -1
+
+            counter += 1
+gen_questions()
