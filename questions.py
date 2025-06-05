@@ -1,6 +1,7 @@
 
 # random math questions generator
 import random
+import quiz_gui_v2 as t
 
 
 
@@ -115,7 +116,7 @@ def gen_questions():
                 # check if the answer is divisable into a integer (no stupid decimals)
                 # will append the question and answer to the lists if it is
                 if answer.is_integer():
-                    Math_Answers.append([str(answer)])
+                    Math_Answers.append([str(int(answer))])
                     Math_Questions.append(finished_question)
                 # if not, reset the question and answer variables
                 else:

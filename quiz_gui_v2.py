@@ -6,6 +6,16 @@ import time
 import questions as q
 # os is imported to open the results file
 import os
+# configparser is imported to read the config file
+import configparser
+# i set these variables here so that they can be used in questions.py
+# you can change the difficuty here, it is the number of numbers in the question,
+# dificulty is the number of numbers in the question, so a difficulty of 4 would be 4 numbers and 3 signs
+Difficulty = 4
+# amount is the number of questions to generate, so if amount is 10, it will generate 10 questions
+Amount = 10
+
+
 
 class Quiz():
     
@@ -13,21 +23,16 @@ class Quiz():
     this tool is used to quiz people using the questions and answers set by the operator,
     it takes the questions and answers from 'questions.py'
     """
-    
     def __init__(self, root):
         # this sets the mode of the quiz
         # mode 1: use randomly generated math questions
         # mode 2: use the questions and answers from questions.py
-        self.mode = 1
-        # you can change the difficuty here, it is the number of numbers in the question,
-        # dificulty is the number of numbers in the question, so a difficulty of 4 would be 4 numbers and 3 signs
-        Difficulty = 2
-        # amount is the number of questions to generate, so if amount is 10, it will generate 10 questions
-        amount = 10
-        if self.mode == 1:
+        self.mode = "quiz"
+
+        if self.mode == "quiz":
             self.answers = q.Answers
             self.questions = q.Questions
-        elif self.mode == 2:
+        elif self.mode == "math":
             self.answers = q.Math_Answers
             self.questions = q.Math_Questions
 
@@ -280,14 +285,13 @@ class Quiz():
 
                     # appends the question number, question text, and answer to the data_list.
                     data_list.append([self.counter, self.questions[counter_less_1], answer])
-
                     # this clears the entry box so you can enter the next answer, gets the correct answer.
                     self.quiz_entry.delete(0, END)
                     if self.mode == 2:
                          correct_answer = self.answers[counter_less_1]
                     else:
                          correct_answer = self.answers[counter_less_1]
-                    print(correct_answer)
+                    
 
                     # this block gets the time taken for the question, and appends it to the data_list.
                     end_taken_time = time.time()
