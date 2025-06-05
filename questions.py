@@ -2,6 +2,7 @@
 # random math questions generator
 import random
 import quiz_gui_v2 as t
+import configparser
 
 
 
@@ -76,10 +77,13 @@ Answers = [
 ]
 """
 
+config = configparser.ConfigParser()
+config.read('settings.ini')
+difficulty = int(config['settings']['difficulty'])
+amount = int(config['settings']['amount'])
+
 # dificulty is the number of numbers in the question, so a difficulty of 4 would be 4 numbers and 3 signs
-difficulty = t.Difficulty
 # amount is the number of questions to generate, so if amount is 10, it will generate 10 questions
-amount = t.Amount
 
 # the lists to store the questions and answers
 Math_Answers = []
@@ -127,4 +131,3 @@ def gen_questions():
                     counter = -1
 
             counter += 1
-gen_questions()

@@ -9,11 +9,6 @@ import os
 # configparser is imported to read the config file
 import configparser
 # i set these variables here so that they can be used in questions.py
-# you can change the difficuty here, it is the number of numbers in the question,
-# dificulty is the number of numbers in the question, so a difficulty of 4 would be 4 numbers and 3 signs
-Difficulty = 4
-# amount is the number of questions to generate, so if amount is 10, it will generate 10 questions
-Amount = 10
 
 
 
@@ -24,15 +19,23 @@ class Quiz():
     it takes the questions and answers from 'questions.py'
     """
     def __init__(self, root):
-        # this sets the mode of the quiz
-        # mode 1: use randomly generated math questions
-        # mode 2: use the questions and answers from questions.py
-        self.mode = "quiz"
-
+        # this grabs all the settings from the settings.ini file
+        config = configparser.ConfigParser()
+        config.read('settings.ini')
+        self.mode = config['settings']['mode']
+        self.amount = config['settings']['amount']
+        self.difficulty = config['settings']['difficulty']
+        self.password = config['settings']['password']
+        self.do_name = bool(config['settings']['name'])
+        self.do_save = bool(config['settings']['save'])
+        self.do_results = bool(config['settings']['results'])
+        self.color = config['settings']['color']
+        # this sets the mode to quiz or math.
         if self.mode == "quiz":
             self.answers = q.Answers
             self.questions = q.Questions
         elif self.mode == "math":
+            q.gen_questions()
             self.answers = q.Math_Answers
             self.questions = q.Math_Questions
 
@@ -40,7 +43,7 @@ class Quiz():
         # makes it so you can change every widgets backround color
         # at the same time.
         global background_color
-        background_color = "#b3b3b3"
+        background_color = self.color
         # results will hold all the data, this includes time taken, date, questions answered, and correct answers.
         self.results = []
         # these track time and date.
@@ -61,8 +64,8 @@ class Quiz():
         # this also affects max name length.
         self.answer_length = 30
 
-        
-        
+
+
         
         # sets the size of the window and its color
         root.geometry("360x300")
@@ -204,7 +207,9 @@ class Quiz():
 
     # this function makes the results window
     def open_results(self):
-        Results_window = ResultsWindow(root)
+        if self.do_results:
+            Results_window = ResultsWindow(root)
+
 
     def not_blank(self):
         """
@@ -230,7 +235,9 @@ class Quiz():
             if not self.not_blank() and self.counter > 0:
                         self.quiz_entry_instructions_color.config(text="this cannot be blank.", fg="#FF0000")
                         return
-            if self.not_blank() and self.counter > 0 and self.mode == 2:
+            
+            if self.not_blank() and self.counter > 0 and self.mode == "math":
+                
                 # if the mode is 2, it will check if the answer is a number, and if it is not, it will end the function and tell you it must be a number.
                 try:
                     int(self.quiz_entry.get())
@@ -239,7 +246,7 @@ class Quiz():
                     return
 
 
-            if self.counter == 0:
+            if self.counter == 0 and self.do_name:
                 self.quiz_instructions.config(text="Please submit your name.")
                 # i bind the enter key so that you can press enter to submit your answer.
                 root.bind('<Return>', lambda event: self.question_answer())
@@ -260,7 +267,10 @@ class Quiz():
                 self.name_said = True
 
 
-            if self.name_done == True:
+            if self.name_done == True or self.do_name == False:
+                if self.name_done == False:
+                     self.name = "disabled"
+                     root.bind('<Return>', lambda event: self.question_answer())
                 
                 if self.counter < self.length:
                     # Bind Enter key to submit the answer.
@@ -328,7 +338,10 @@ class Quiz():
                     # may remove self.openresults() here. idk
                     self.open_results()
                     self.quiz_entry.config(state=DISABLED)
-                    self.quiz_entry_instructions_color.config(text="Quiz Finished! go to results page for results!", fg="#00FFFF")
+                    if self.do_results:
+                        self.quiz_entry_instructions_color.config(text="Quiz Finished! go to results page for results!", fg="#00FFFF")
+                    elif not self.do_results:
+                        self.quiz_entry_instructions_color.config(text="Quiz Finished! Talk to your operator!", fg="#00FFFF")
 
 
                   
@@ -339,6 +352,8 @@ class Quiz():
     # this function writes everything to the results.txt file
     
     def write_to_file(self, data):
+        if self.do_save == False:
+            return
         with open("results.txt", "a") as r:
             # Loop through the data to write each question's details
             end_time = time.time()

@@ -7,7 +7,7 @@ import configparser
 config = configparser.ConfigParser()
 
 with open('settings.ini', 'w') as configfile:
-    config['MATH'] = {
+    config['settings'] = {
         'difficulty': '4',
         'amount': '10',
         'mode': 'easy',
@@ -18,10 +18,10 @@ with open('settings.ini', 'w') as configfile:
 
 config.read('settings.ini')
 
-difficulty = config['MATH']['difficulty']
-amount = config['MATH']['amount']
-mode = config['MATH']['mode']
-password = config['MATH']['password']
+difficulty = config['settings']['difficulty']
+amount = config['settings']['amount']
+mode = config['settings']['mode']
+password = config['settings']['password']
 
 print(f"Amount set to: {amount}")
 print(f"Difficulty set to: {difficulty}")
