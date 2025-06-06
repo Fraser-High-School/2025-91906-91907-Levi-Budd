@@ -210,15 +210,18 @@ class Quiz():
         if self.do_results:
             Results_window = ResultsWindow(root)
 
+    def open_settings(self):
+        Settings_window = SettingsWindow(root)
 
-    def not_blank(self):
+
+    def blank_checker(self):
         """
         This function checks if the text is not blank, and returns True if it is not blank.
         """
-        not_blank = bool(self.quiz_entry.get().strip())
-        if not_blank == True:
+        blank_checker = bool(self.quiz_entry.get().strip())
+        if blank_checker == True:
              self.quiz_entry_instructions_color.config(text="this cannot be blank.", fg="#FF0000")
-        return not_blank
+        return blank_checker
         
                 
 
@@ -231,12 +234,15 @@ class Quiz():
             # if it is, it will show the next question and continue the quiz,
             # otherwise it will disable the submit button and end the quiz.
             data_list = []
+            if self.counter == 0 and self.quiz_entry.get() == self.password:
+                self.open_settings()
+                return
             # if the entry box is blank, and its not the first go it will end the function and tell you it cant be blank
-            if not self.not_blank() and self.counter > 0:
+            if not self.blank_checker() and self.counter > 0:
                         self.quiz_entry_instructions_color.config(text="this cannot be blank.", fg="#FF0000")
                         return
             
-            if self.not_blank() and self.counter > 0 and self.mode == "math":
+            if self.blank_checker() and self.counter > 0 and self.mode == "math":
                 
                 # if the mode is 2, it will check if the answer is a number, and if it is not, it will end the function and tell you it must be a number.
                 try:
@@ -253,7 +259,7 @@ class Quiz():
 
                 if self.name_said == True:
                     # if name is blank it ends the function and tells the user to enter a name.
-                    if not self.not_blank():
+                    if not self.blank_checker():
                         self.quiz_entry_instructions_color.config(text="this cannot be blank.", fg="#FF0000")
                         return
                     
@@ -442,6 +448,7 @@ class ResultsWindow():
                                 bg=background_color,
                                 )
         self.results_label.grid(row=1, column=0)
+
         self.results_list = Listbox(self.results_frame,
                                 font=("Arial", "14"),
                                 width=27,
@@ -501,15 +508,77 @@ class ResultsWindow():
                                 )
             self.make_button.grid(row=item[3], column=item[4], padx=5, pady=5)
 
+class SettingsWindow():
+    """
+    This class creates the settings window, which allows the user to change settings.
+    """
 
+    def __init__(self, parent):
+        self.settings_window = Toplevel(parent)
+        self.settings_window.title("Settings")
+        self.settings_window.geometry("360x425")
+        self.settings_window.configure(bg=background_color)
 
+        self.settings_frame = Frame(bg=background_color, master=self.settings_window)
+        self.settings_frame.grid(sticky="n")
+        self.settings_window.grid_rowconfigure(0, weight=1)
+        self.settings_window.grid_columnconfigure(0, weight=1)
+        
+        self.settings_heading = Label(self.settings_frame,
+                                text="Settings",
+                                font=("arial", "25"),
+                                bg=background_color,
+                                )            
+        self.settings_heading.grid(row=0, column=0, sticky="n", columnspan=2)
 
+        self.settings_label = Label(self.settings_frame,
+                                text="These are the results of the 5 most \n"
+                                    " recent quizzes out of X total\n"
+                                    " quizzes, the lower the older.",
+                                font=("arial", "14"),
+                                justify="left",
+                                wraplength=350,
+                                bg=background_color,
+                                )
+        self.settings_label.grid(row=1, column=0, columnspan=2)
 
-                
+        # Create a frame to hold both OptionMenus
+        self.dropdown_frame = Frame(self.settings_frame, bg=background_color)
+        self.dropdown_frame.grid(row=2, column=0, columnspan=2, sticky="w")
+        # this list contains all the data for the option menus
+        # it goes: start text, options, row, collumn
+        optionmenus = [
+        # this list contains all the data for the option menus
+        # it goes: start text, options, row, collumn
+        ["mode", "quiz", "math", 0, 0,],
+        ["name", "True", "False", 0, 1],
+        
+        
+        ]
+        for i in range(len(optionmenus)):
+            fruit_var = StringVar()
+            fruit_var.set(optionmenus[i][0])  # Set default value to the first option
 
+            self.optionmenu = OptionMenu(self.dropdown_frame, fruit_var, optionmenus[i][1], optionmenus[i][1])
+            self.optionmenu.config(
+                                    font=("arial", 12),
+                                    bg=background_color,
+                                    fg="#000000",
+                                    highlightthickness=0,
+                                    bd=1,
+                                    relief="groove"
+            )
+            self.optionmenu["menu"].config(
+                                    font=("arial", 12),
+                                    bg=background_color,
+                                    fg="#000000"
+                                    
+            )
+            self.optionmenu.grid(row=optionmenus[i][2], column=optionmenus[i][3], padx=5, pady=5)
 
-            
-            
+        # Add more settings options here as needed
+
+        
           
                 
     
