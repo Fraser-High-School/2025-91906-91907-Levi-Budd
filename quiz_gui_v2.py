@@ -1,6 +1,7 @@
 # importing tkinter, time, 
 # and questions & answers from questions.py
 from tkinter import *
+from tkinter.ttk import Combobox
 from time import time, strftime, localtime
 import time
 import questions as q
@@ -69,7 +70,6 @@ class Quiz():
         
         # sets the size of the window and its color
         root.geometry("360x300")
-        root.wm_attributes("-transparentcolor", 'grey') 
         root.configure(bg=background_color)
        
 
@@ -427,6 +427,7 @@ class ResultsWindow():
 
         self.results_frame = Frame(bg=background_color, master=self.results_window)
         self.results_frame.grid(sticky="n")
+
         self.results_window.grid_rowconfigure(0, weight=1)
         self.results_window.grid_columnconfigure(0, weight=1)
         
@@ -516,7 +517,7 @@ class SettingsWindow():
     def __init__(self, parent):
         self.settings_window = Toplevel(parent)
         self.settings_window.title("Settings")
-        self.settings_window.geometry("360x425")
+        self.settings_window.geometry("460x425")
         self.settings_window.configure(bg=background_color)
 
         self.settings_frame = Frame(bg=background_color, master=self.settings_window)
@@ -529,7 +530,7 @@ class SettingsWindow():
                                 font=("arial", "25"),
                                 bg=background_color,
                                 )            
-        self.settings_heading.grid(row=0, column=0, sticky="n", columnspan=2)
+        self.settings_heading.grid(row=0, column=0)
 
         self.settings_label = Label(self.settings_frame,
                                 text="These are the results of the 5 most \n"
@@ -541,48 +542,129 @@ class SettingsWindow():
                                 bg=background_color,
                                 )
         self.settings_label.grid(row=1, column=0, columnspan=2)
+        # var set to make next row of option labels
+        self.labels_done = False
+        for i in range(2):
+            for i in range(4):
+                if self.labels_done:
+                    labels_row = 5
+                    labels = ["Mode", "Name", "Save", "Results"]
+                else:
+                    labels_row = 3
+                    labels = ["Amount", "Length", "Password", "Color"]
+                
+                self.settings_options_labels = Label(self.settings_frame,
+                                        text=labels[i],
+                                        font=("arial", "14"),
+                                        wraplength=350,
+                                        bg=background_color,
+                                        )
+                self.settings_options_labels.grid(row=labels_row, column=i, columnspan=1)
+            self.labels_done = True
+            
 
-        # Create a frame to hold both OptionMenus
-        self.dropdown_frame = Frame(self.settings_frame, bg=background_color)
-        self.dropdown_frame.grid(row=2, column=0, columnspan=2, sticky="w")
-        # this list contains all the data for the option menus
-        # it goes: start text, options, row, collumn
-        optionmenus = [
-        # this list contains all the data for the option menus
-        # it goes: start text, options, row, collumn
-        ["mode", "quiz", "math", 0, 0,],
-        ["name", "True", "False", 0, 1],
-        
-        
+        # Create a frame to hold both optionmenus and comboboxes
+        self.optionmenu_frame = Frame(self.settings_frame, bg=background_color)
+        self.optionmenu_frame.grid(row=4, column=0, columnspan=2)
+        self.comboboxes_frame = Frame(self.settings_frame, bg=background_color)
+        self.comboboxes_frame.grid(row=6, column=0, columnspan=2)
+        self.optionmenus_ref_dict = {}
+        self.comboboxes_ref_dict = {}
+
+        def create_optionmenus():
+            optionmenus = [
+            # this list contains all the data for the option menus
+            # it goes: start text, options, row, collumn
+            ["mode", "quiz", "math", 0, 0,],
+            ["name", "yes", "no", 0, 1],
+            ["save", "yes", "no", 0, 2],
+            ["results", "yes", "no", 0, 3],
+
+            ]
+
+            for i in range(len(optionmenus)):
+                default_state = StringVar()
+                default_state.set(optionmenus[i][0])  # Set default value to the first option
+
+                self.optionmenu = OptionMenu(self.optionmenu_frame, default_state, optionmenus[i][1], optionmenus[i][2])
+                self.optionmenu.config(
+                                        font=("arial", 12),
+                                        bg=background_color,
+                                        fg="#000000",
+                                        highlightthickness=0,
+                                        bd=1,
+                                        width=6,
+                                        relief="groove"
+                )
+                self.optionmenu["menu"].config(
+                                        font=("arial", 12),
+                                        bg=background_color,
+                                        fg="#000000"
+                                        
+                )
+                self.optionmenu.grid(row=optionmenus[i][3], column=optionmenus[i][4], padx=5, pady=5)
+
+                self.optionmenus_ref_dict.update({optionmenus[i][0]: self.optionmenu})
+
+
+        def create_comboboxes():
+            comboboxes = [
+            # this list contains all the data for the combomenu
+            # it goes: start text, options, row, collumn
+            ["amount", "5", "10", "15", "20", 0, 0],
+            ["length", "5", "10", "15", "20", 0, 1],
+            ["password", "", "", "", "", 0, 2],
+            ["color", "grey", "white", "black", "transparent", 0, 3],
+            ]
+
+            # this loop creates the comboboxes, it goes through the list and creates a combobox for each item in the list.
+            for i in range(len(comboboxes)):
+                default_state = StringVar()
+                default_state.set(comboboxes[i][0])  # Set default value to the first option
+
+                self.comboboxes = Combobox(self.comboboxes_frame,
+                                           values=[comboboxes[i][1], comboboxes[i][2], comboboxes[i][3], comboboxes[i][4]],
+                                           font=("arial", 12),
+                                           width=8,
+                                           )
+                self.comboboxes.grid(row=comboboxes[i][5], column=comboboxes[i][6], padx=5, pady=5)
+                self.comboboxes.set(comboboxes[i][0])  # Set the default text to the first option
+
+                self.comboboxes_ref_dict.update({comboboxes[i][0]: self.comboboxes})
+
+
+        # frame to hold the buttons
+        self.settings_button_frame = Frame(self.settings_frame,
+                                    background=background_color)
+        self.settings_button_frame.grid(row=7)
+
+        # list to hold the buttons, so we can change them later if needed.
+        self.button_ref_list = []
+
+        settings_button_details_list = [
+        # text, color, command, row, column
+        # put your buttons features in this list.
+        ["Exit", "#f44336", lambda: print(), "0", "0"],
+        ["Apply", "#aaaeff", lambda: print(), "0", "1"],
         ]
-        for i in range(len(optionmenus)):
-            fruit_var = StringVar()
-            fruit_var.set(optionmenus[i][0])  # Set default value to the first option
+        self.button_ref_list = []
 
-            self.optionmenu = OptionMenu(self.dropdown_frame, fruit_var, optionmenus[i][1], optionmenus[i][1])
-            self.optionmenu.config(
-                                    font=("arial", 12),
-                                    bg=background_color,
-                                    fg="#000000",
-                                    highlightthickness=0,
-                                    bd=1,
-                                    relief="groove"
-            )
-            self.optionmenu["menu"].config(
-                                    font=("arial", 12),
-                                    bg=background_color,
-                                    fg="#000000"
-                                    
-            )
-            self.optionmenu.grid(row=optionmenus[i][2], column=optionmenus[i][3], padx=5, pady=5)
-
-        # Add more settings options here as needed
-
-        
+        #actually turns the variables into buttons
+        for item in settings_button_details_list:
+            self.make_button = Button(self.settings_button_frame,
+                                text=item[0],
+                                bg=item[1],
+                                fg="#000000",
+                                font=("Arial", "20", "bold"),
+                                width=9,
+                                command=item[2]
+                                )
+            self.make_button.grid(row=item[3], column=item[4], padx=5, pady=5)
           
                 
-    
-        
+        # Create the option menus and comboboxes
+        create_optionmenus()
+        create_comboboxes()
 
 # main routine
 if __name__ == "__main__":
