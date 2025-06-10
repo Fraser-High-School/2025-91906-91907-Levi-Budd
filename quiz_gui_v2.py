@@ -39,12 +39,18 @@ class Quiz():
             q.gen_questions()
             self.answers = q.Math_Answers
             self.questions = q.Math_Questions
-
-        # backround_color variable is the color grey used for the backround
-        # makes it so you can change every widgets backround color
-        # at the same time.
+        # global variable for background color, so it can be used in other classes.
         global background_color
-        background_color = self.color
+        if self.color == "grey":
+            # if the color is grey, it will set the background color to grey.
+            background_color = "#b3b3b3"
+        elif self.color == "transparent":
+            root.wm_attributes("-transparentcolor", 'grey')
+            self.color = "grey"
+        else:
+            # if the color is not grey, it will set the background color to the color specified in the settings.ini file.
+            background_color = self.color
+
         # results will hold all the data, this includes time taken, date, questions answered, and correct answers.
         self.results = []
         # these track time and date.
@@ -515,6 +521,19 @@ class SettingsWindow():
     """
 
     def __init__(self, parent):
+        config = configparser.ConfigParser()
+        config.read('settings.ini')
+        self.config_list = [
+            config['settings']['mode'],
+            config['settings']['name'],
+            config['settings']['save'],
+            config['settings']['results'],
+            config['settings']['amount'],
+            config['settings']['difficulty'],
+            config['settings']['password'],
+            config['settings']['color']
+        ]
+
         self.settings_window = Toplevel(parent)
         self.settings_window.title("Settings")
         self.settings_window.geometry("460x425")
@@ -524,7 +543,14 @@ class SettingsWindow():
         self.settings_frame.grid(sticky="n")
         self.settings_window.grid_rowconfigure(0, weight=1)
         self.settings_window.grid_columnconfigure(0, weight=1)
-        
+
+        def restart_quiz():
+            # Destroy all widgets in the root window to reset the GUI
+            for widget in root.winfo_children():
+                widget.destroy()
+            # Reinitialize the quiz GUI
+            Quiz(root)
+
         self.settings_heading = Label(self.settings_frame,
                                 text="Settings",
                                 font=("arial", "25"),
@@ -533,9 +559,7 @@ class SettingsWindow():
         self.settings_heading.grid(row=0, column=0)
 
         self.settings_label = Label(self.settings_frame,
-                                text="These are the results of the 5 most \n"
-                                    " recent quizzes out of X total\n"
-                                    " quizzes, the lower the older.",
+                                text="This is the settings window, you can change several settings down below.",
                                 font=("arial", "14"),
                                 justify="left",
                                 wraplength=350,
@@ -547,27 +571,29 @@ class SettingsWindow():
         for i in range(2):
             for i in range(4):
                 if self.labels_done:
-                    labels_row = 5
-                    labels = ["Mode", "Name", "Save", "Results"]
-                else:
-                    labels_row = 3
+                    labels_row = 4
                     labels = ["Amount", "Length", "Password", "Color"]
+                else:
+                    labels_row = 2
+                    labels = ["Mode", "Name", "Save", "Results"]
                 
                 self.settings_options_labels = Label(self.settings_frame,
                                         text=labels[i],
                                         font=("arial", "14"),
                                         wraplength=350,
                                         bg=background_color,
+                                        anchor="center"
                                         )
-                self.settings_options_labels.grid(row=labels_row, column=i, columnspan=1)
+                self.settings_options_labels.grid(row=labels_row, column=i)
             self.labels_done = True
+            self.settings_options_labels.grid_columnconfigure((0, 1, 2, 3), weight=1)
             
 
         # Create a frame to hold both optionmenus and comboboxes
         self.optionmenu_frame = Frame(self.settings_frame, bg=background_color)
-        self.optionmenu_frame.grid(row=4, column=0, columnspan=2)
+        self.optionmenu_frame.grid(row=3, column=0, columnspan=2)
         self.comboboxes_frame = Frame(self.settings_frame, bg=background_color)
-        self.comboboxes_frame.grid(row=6, column=0, columnspan=2)
+        self.comboboxes_frame.grid(row=5, column=0, columnspan=2)
         self.optionmenus_ref_dict = {}
         self.comboboxes_ref_dict = {}
 
@@ -576,15 +602,15 @@ class SettingsWindow():
             # this list contains all the data for the option menus
             # it goes: start text, options, row, collumn
             ["mode", "quiz", "math", 0, 0,],
-            ["name", "yes", "no", 0, 1],
-            ["save", "yes", "no", 0, 2],
-            ["results", "yes", "no", 0, 3],
+            ["name", "True", "False", 0, 1],
+            ["save", "True", "False", 0, 2],
+            ["results", "True", "False", 0, 3],
 
             ]
 
             for i in range(len(optionmenus)):
                 default_state = StringVar()
-                default_state.set(optionmenus[i][0])  # Set default value to the first option
+                default_state.set(self.config_list[i])  # Set default value to the first option
 
                 self.optionmenu = OptionMenu(self.optionmenu_frame, default_state, optionmenus[i][1], optionmenus[i][2])
                 self.optionmenu.config(
@@ -619,6 +645,7 @@ class SettingsWindow():
 
             # this loop creates the comboboxes, it goes through the list and creates a combobox for each item in the list.
             for i in range(len(comboboxes)):
+                counter = i + 4
                 default_state = StringVar()
                 default_state.set(comboboxes[i][0])  # Set default value to the first option
 
@@ -628,11 +655,23 @@ class SettingsWindow():
                                            width=8,
                                            )
                 self.comboboxes.grid(row=comboboxes[i][5], column=comboboxes[i][6], padx=5, pady=5)
-                self.comboboxes.set(comboboxes[i][0])  # Set the default text to the first option
+                self.comboboxes.set(self.config_list[counter])  # Set the default text to the first option
 
                 self.comboboxes_ref_dict.update({comboboxes[i][0]: self.comboboxes})
-
-
+        # this explains what the two modes do.
+        self.settings_mode_info = Label(self.settings_frame,
+                                text="The mode setting allows the 'quiz' and " \
+                                "'math' modes, quiz will run the" \
+                                "questions set in questions.py, while " \
+                                "math with randomly generate math " \
+                                "questions. Hover over options to see " \
+                                "what they do, or read the README.txt",
+                                font=("arial", "14"),
+                                justify="left",
+                                wraplength=450,
+                                bg=background_color,
+                                )
+        self.settings_mode_info.grid(row=6, column=0)
         # frame to hold the buttons
         self.settings_button_frame = Frame(self.settings_frame,
                                     background=background_color)
@@ -644,8 +683,8 @@ class SettingsWindow():
         settings_button_details_list = [
         # text, color, command, row, column
         # put your buttons features in this list.
-        ["Exit", "#f44336", lambda: print(), "0", "0"],
-        ["Apply", "#aaaeff", lambda: print(), "0", "1"],
+        ["Exit", "#f44336", lambda: restart_quiz(), "0", "0"],
+        ["Apply", "#aaaeff", lambda: apply_changes(), "0", "1"],
         ]
         self.button_ref_list = []
 
@@ -657,7 +696,9 @@ class SettingsWindow():
                                 fg="#000000",
                                 font=("Arial", "20", "bold"),
                                 width=9,
-                                command=item[2]
+                                command=item[2],
+                                anchor="center",
+                                justify="center"
                                 )
             self.make_button.grid(row=item[3], column=item[4], padx=5, pady=5)
           
