@@ -27,9 +27,9 @@ class Quiz():
         self.amount = config['settings']['amount']
         self.difficulty = config['settings']['difficulty']
         self.password = config['settings']['password']
-        self.do_name = bool(config['settings']['name'])
-        self.do_save = bool(config['settings']['save'])
-        self.do_results = bool(config['settings']['results'])
+        self.do_name = eval(config['settings']['name'])
+        self.do_save = eval(config['settings']['save'])
+        self.do_results = eval(config['settings']['results'])
         self.color = config['settings']['color']
         # this sets the mode to quiz or math.
         if self.mode == "quiz":
@@ -41,9 +41,11 @@ class Quiz():
             self.questions = q.Math_Questions
         # global variable for background color, so it can be used in other classes.
         global background_color
+        # if the color is grey, it will set the background color to a nicer shad of grey.
         if self.color == "grey":
-            # if the color is grey, it will set the background color to grey.
             background_color = "#b3b3b3"
+
+        # if the color is transparent it sets 'grey' to be transparent color.
         elif self.color == "transparent":
             root.wm_attributes("-transparentcolor", 'grey')
             self.color = "grey"
@@ -536,14 +538,12 @@ class SettingsWindow():
 
         self.settings_window = Toplevel(parent)
         self.settings_window.title("Settings")
-        self.settings_window.geometry("460x425")
+        self.settings_window.geometry("460x410")
         self.settings_window.configure(bg=background_color)
 
         self.settings_frame = Frame(bg=background_color, master=self.settings_window)
-        self.settings_frame.grid(sticky="n")
-        self.settings_window.grid_rowconfigure(0, weight=1)
-        self.settings_window.grid_columnconfigure(0, weight=1)
-
+        self.settings_frame.pack(fill="both", expand=True)
+        
         def restart_quiz():
             # Destroy all widgets in the root window to reset the GUI
             for widget in root.winfo_children():
@@ -556,7 +556,7 @@ class SettingsWindow():
                                 font=("arial", "25"),
                                 bg=background_color,
                                 )            
-        self.settings_heading.grid(row=0, column=0)
+        self.settings_heading.pack(pady=(5, 0))
 
         self.settings_label = Label(self.settings_frame,
                                 text="This is the settings window, you can change several settings down below.",
@@ -565,37 +565,42 @@ class SettingsWindow():
                                 wraplength=350,
                                 bg=background_color,
                                 )
-        self.settings_label.grid(row=1, column=0, columnspan=2)
+        self.settings_label.pack(pady=(0, 10))
+
         # var set to make next row of option labels
         self.labels_done = False
-        for i in range(2):
-            for i in range(4):
-                if self.labels_done:
-                    labels_row = 4
-                    labels = ["Amount", "Length", "Password", "Color"]
-                else:
-                    labels_row = 2
-                    labels = ["Mode", "Name", "Save", "Results"]
-                
-                self.settings_options_labels = Label(self.settings_frame,
+        def create_labels(type):
+            label_row_frame = Frame(self.settings_frame, bg=background_color)
+            label_row_frame.pack(fill="x")
+
+            if type == "comboboxes":
+                labels = ["Amount", "Length", "Password", "Color"]
+
+            elif type == "optionmenus":
+                labels = ["Mode", "Name", "Save", "Results"]
+
+            else:
+                 return
+            
+            for i in range(len(labels)):
+                self.settings_options_labels = Label(label_row_frame,
                                         text=labels[i],
                                         font=("arial", "14"),
                                         wraplength=350,
                                         bg=background_color,
                                         anchor="center"
                                         )
-                self.settings_options_labels.grid(row=labels_row, column=i)
-            self.labels_done = True
-            self.settings_options_labels.grid_columnconfigure((0, 1, 2, 3), weight=1)
+                self.settings_options_labels.pack(side=LEFT, expand=True, fill="x", padx=5)
             
+            self.labels_done = True
 
-        # Create a frame to hold both optionmenus and comboboxes
+        # create the optiomenu labels, this must be before the frames for the optionmenus and comboboxes are created
+        create_labels("optionmenus")
+
+        # Create a frame to hold optionmenus
         self.optionmenu_frame = Frame(self.settings_frame, bg=background_color)
-        self.optionmenu_frame.grid(row=3, column=0, columnspan=2)
-        self.comboboxes_frame = Frame(self.settings_frame, bg=background_color)
-        self.comboboxes_frame.grid(row=5, column=0, columnspan=2)
+        self.optionmenu_frame.pack(fill="x", pady=(5, 0))
         self.optionmenus_ref_dict = {}
-        self.comboboxes_ref_dict = {}
 
         def create_optionmenus():
             optionmenus = [
@@ -628,9 +633,17 @@ class SettingsWindow():
                                         fg="#000000"
                                         
                 )
-                self.optionmenu.grid(row=optionmenus[i][3], column=optionmenus[i][4], padx=5, pady=5)
+                self.optionmenu.pack(side=LEFT, expand=True, fill="x", padx=5)
 
                 self.optionmenus_ref_dict.update({optionmenus[i][0]: self.optionmenu})
+
+        # create the combobox labels
+        create_labels("comboboxes")
+
+        # Create a frame to hold comboboxes
+        self.comboboxes_frame = Frame(self.settings_frame, bg=background_color)
+        self.comboboxes_frame.pack(fill="x", pady=(5, 0))
+        self.comboboxes_ref_dict = {}
 
 
         def create_comboboxes():
@@ -654,7 +667,7 @@ class SettingsWindow():
                                            font=("arial", 12),
                                            width=8,
                                            )
-                self.comboboxes.grid(row=comboboxes[i][5], column=comboboxes[i][6], padx=5, pady=5)
+                self.comboboxes.pack(side=LEFT, expand=True, fill="x", padx=5)
                 self.comboboxes.set(self.config_list[counter])  # Set the default text to the first option
 
                 self.comboboxes_ref_dict.update({comboboxes[i][0]: self.comboboxes})
@@ -664,18 +677,18 @@ class SettingsWindow():
                                 "'math' modes, quiz will run the" \
                                 "questions set in questions.py, while " \
                                 "math with randomly generate math " \
-                                "questions. Hover over options to see " \
-                                "what they do, or read the README.txt",
+                                "questions. Read README.txt for explanation on what" \
+                                " the settings do.",
                                 font=("arial", "14"),
                                 justify="left",
                                 wraplength=450,
                                 bg=background_color,
                                 )
-        self.settings_mode_info.grid(row=6, column=0)
+        self.settings_mode_info.pack(pady=(10, 0))
         # frame to hold the buttons
         self.settings_button_frame = Frame(self.settings_frame,
                                     background=background_color)
-        self.settings_button_frame.grid(row=7)
+        self.settings_button_frame.pack(pady=(10, 0))
 
         # list to hold the buttons, so we can change them later if needed.
         self.button_ref_list = []
@@ -700,12 +713,37 @@ class SettingsWindow():
                                 anchor="center",
                                 justify="center"
                                 )
-            self.make_button.grid(row=item[3], column=item[4], padx=5, pady=5)
+            self.make_button.pack(side=LEFT, expand=True, fill="x", padx=10)
           
                 
         # Create the option menus and comboboxes
         create_optionmenus()
         create_comboboxes()
+        def apply_changes():
+            """
+            This function applies the changes made in the settings window.
+            It updates the settings.ini file with the new values.
+            """
+            config = configparser.ConfigParser()
+            config.read('settings.ini')
+
+            # Update the settings with the new values from the option menus and comboboxes
+            config['settings']['mode'] = self.optionmenus_ref_dict['mode'].cget('text')
+            config['settings']['name'] = self.optionmenus_ref_dict['name'].cget('text')
+            config['settings']['save'] = self.optionmenus_ref_dict['save'].cget('text')
+            config['settings']['results'] = self.optionmenus_ref_dict['results'].cget('text')
+            config['settings']['amount'] = self.comboboxes_ref_dict['amount'].get()
+            config['settings']['difficulty'] = self.comboboxes_ref_dict['length'].get()
+            config['settings']['password'] = self.comboboxes_ref_dict['password'].get()
+            config['settings']['color'] = self.comboboxes_ref_dict['color'].get()
+
+            # Write the updated settings back to the file
+            with open('settings.ini', 'w') as configfile:
+                config.write(configfile)
+
+            # Close the settings window and restart the quiz
+            self.settings_window.destroy()
+            restart_quiz()
 
 # main routine
 if __name__ == "__main__":
