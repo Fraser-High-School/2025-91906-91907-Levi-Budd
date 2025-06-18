@@ -76,11 +76,14 @@ Answers = [
     ["a", "t"],
 ]
 """
-
-config = configparser.ConfigParser()
-config.read('settings.ini')
-difficulty = int(config['settings']['difficulty'])
-amount = int(config['settings']['amount'])
+try:
+    config = configparser.ConfigParser()
+    config.read('settings.ini')
+    difficulty = int(config['settings']['difficulty'])
+    amount = int(config['settings']['amount'])
+except (configparser.NoSectionError, configparser.NoOptionError, ValueError):
+    difficulty = 2
+    amount = 10
 
 # dificulty is the number of numbers in the question, so a difficulty of 4 would be 4 numbers and 3 signs
 # amount is the number of questions to generate, so if amount is 10, it will generate 10 questions

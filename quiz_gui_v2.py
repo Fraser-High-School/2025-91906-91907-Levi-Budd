@@ -21,16 +21,32 @@ class Quiz():
     """
     def __init__(self, root):
         # this grabs all the settings from the settings.ini file
-        config = configparser.ConfigParser()
-        config.read('settings.ini')
-        self.mode = config['settings']['mode']
-        self.amount = config['settings']['amount']
-        self.difficulty = config['settings']['difficulty']
-        self.password = config['settings']['password']
-        self.do_name = eval(config['settings']['name'])
-        self.do_save = eval(config['settings']['save'])
-        self.do_results = eval(config['settings']['results'])
-        self.color = config['settings']['color']
+        self.error_message = ""
+        try:
+            config = configparser.ConfigParser()
+            config.read('settings.ini')
+            self.mode = str(config['settings']['mode'])
+            self.amount = int(config['settings']['amount'])
+            self.difficulty = int(config['settings']['difficulty'])
+            self.password = str(config['settings']['password'])
+            self.do_name = config.getboolean('settings', 'name')
+            self.do_save = config.getboolean('settings', 'save')
+            self.do_results = config.getboolean('settings', 'results')
+            self.color = str(config['settings']['color'])
+        except (ValueError, KeyError) as e:
+            # if there is an error, it will set the mode to quiz, amount to 5, difficulty to 5, name to True, save to True, results to True, and color to grey.
+            self.error_message = ("Error reading settings.ini:\n" + str(e))
+            config = configparser.ConfigParser()
+            config.read('settings.ini')
+            #put stff here
+            self.mode = "quiz"
+            self.amount = 5
+            self.difficulty = 2
+            self.password = str(config['settings']['password'])
+            self.do_name = True
+            self.do_save = True
+            self.do_results = True
+            self.color = "grey"
         # this sets the mode to quiz or math.
         if self.mode == "quiz":
             self.answers = q.Answers
@@ -41,14 +57,9 @@ class Quiz():
             self.questions = q.Math_Questions
         # global variable for background color, so it can be used in other classes.
         global background_color
-        # if the color is grey, it will set the background color to a nicer shad of grey.
+        # if the color is grey, it will set the background color to a nicer shade of grey.
         if self.color == "grey":
             background_color = "#b3b3b3"
-
-        # if the color is transparent it sets 'grey' to be transparent color.
-        elif self.color == "transparent":
-            root.wm_attributes("-transparentcolor", 'grey')
-            self.color = "grey"
         else:
             # if the color is not grey, it will set the background color to the color specified in the settings.ini file.
             background_color = self.color
@@ -78,8 +89,13 @@ class Quiz():
         
         # sets the size of the window and its color
         root.geometry("360x300")
-        root.configure(bg=background_color)
-       
+        try:
+            root.configure(bg=background_color)
+        except Exception:
+            # if there is an error, it will set the background color to grey.
+            background_color = "#b3b3b3"
+            root.configure(bg=background_color)
+            self.color = "error"
 
         # the frame holding the entire gui is created here
         self.quiz_frame = Frame(padx=10, pady=10, bg=background_color)
@@ -109,6 +125,19 @@ class Quiz():
                                   bg=background_color,
                                   )
         self.quiz_entry_instructions_color.grid(row=3, padx=1, pady=1,)
+        # tell the use the color errored
+        if self.color == "error" and self.error_message == "":
+             self.quiz_entry_instructions_color.config(text="Color setting invalid, defaulting to grey.", fg="#FF0000")
+        elif self.color == "white" or self.color == "#FFFFFF":
+            background_color = self.color
+            self.quiz_entry_instructions_color.config(fg="#000000")
+        if self.error_message != "":
+            # if there is an error message, it will display it in the entry box instructions color label.
+            self.quiz_entry_instructions_color.config(text=self.error_message, fg="#FF0000")
+            # and set the background color to grey.
+            background_color = "#b3b3b3"
+            root.configure(bg=background_color)
+        
 
         # another label that explains how to start quiz
         question = "Press start quiz to start answering questions!"
@@ -341,6 +370,7 @@ class Quiz():
                     data_list = sum(data_list, [])
                     self.results.append(data_list)
                     self.start_taken_time = time.time()
+                    # convenient for debugging, lets me see if the data_list is being created correctly.
                     print(data_list)
 
                 # increment counter by 1 to move to the next question
@@ -378,7 +408,7 @@ class Quiz():
             
 
             
-            
+            # write the start of the results file, including the name, date, and questions answered.
             r.write(f"""
 -------------------------------------------TEST RESULTS----------------------------------------------------------
 Name: {self.name}
@@ -412,7 +442,7 @@ Test Finished in: {elapsed_minutes} minutes and {elapsed_seconds} seconds.
 {early_finish_text}
 
 """)
-            # this block writes the summary results to summart_results.txt.
+            # this block writes the summary results to summary_results.txt.
             
             with open("summary_results.txt", "a") as r:
  
@@ -427,18 +457,28 @@ class ResultsWindow():
     """
 
     def __init__(self, parent):
-        
+        """
+        This function creates the results window, which shows the results of the quiz.
+        """
+
+
+
+
+        # setting results window size, color, title, and as a Toplevel window.
         self.results_window = Toplevel(parent)
         self.results_window.title("Results")
         self.results_window.geometry("360x425")
         self.results_window.configure(bg=background_color)
 
+        # making the frame that holds all the widgets, and making its master the results window itself.
         self.results_frame = Frame(bg=background_color, master=self.results_window)
         self.results_frame.grid(sticky="n")
 
+        # this is to make the frame expand to fill the window, and to make it scrollable if needed.
         self.results_window.grid_rowconfigure(0, weight=1)
         self.results_window.grid_columnconfigure(0, weight=1)
         
+        # this is creating the heading
         self.results_heading = Label(self.results_frame,
                                 text="Results",
                                 font=("arial", "25"),
@@ -447,6 +487,7 @@ class ResultsWindow():
                                 )            
         self.results_heading.grid(row=0, column=0, sticky="n")
 
+        # this is creating the label that explains what the results are
         self.results_label = Label(self.results_frame,
                                 text="These are the results of the 5 most \n"
                                     " recent quizzes out of X total\n"
@@ -458,6 +499,7 @@ class ResultsWindow():
                                 )
         self.results_label.grid(row=1, column=0)
 
+        # this is creating the listbox that holds the summarized results
         self.results_list = Listbox(self.results_frame,
                                 font=("Arial", "14"),
                                 width=27,
@@ -486,8 +528,12 @@ class ResultsWindow():
             # Reinitialize the quiz GUI
             Quiz(root)
 
+        # further explanation of the results window, tells user what the buttons do, and what the color of the listbox means.
         self.results_info = Label(self.results_frame,
-                                text="You can see more in-depth results (what questions were wrong specifically) by going to the file. If the box is yellow, then there are more results in the file than shown here.",                                       
+                                text="You can see more in-depth results (what \n" \
+                                "questions were wrong specifically) by \n" \
+                                "going to the file. If the box is yellow, then \n" \
+                                "there are more results in the file than shown here.",                                       
                                 font=("arial", "14"),
                                 justify="left",
                                 wraplength=350,
@@ -495,9 +541,12 @@ class ResultsWindow():
                                 )
         self.results_info.grid(row=3, column=0)
 
+        # this is creating the frame that holds the buttons
         self.results_button_frame = Frame(self.results_frame,
                                     background=background_color)
         self.results_button_frame.grid(sticky="ew", row=4)
+
+        # list to hold the button features to be created below.
         results_button_details_list = [
         # text, color, command, row, column
         # put your buttons features in this list.
@@ -519,10 +568,14 @@ class ResultsWindow():
 
 class SettingsWindow():
     """
-    This class creates the settings window, which allows the user to change settings.
+    This class creates the settings window, which allows the user to change their settings in a GUI.
+
+    In this window i used the pack geometry manager instead of grid, this is because was having tons of
+    issues with grid using the combo and menuboxes, and didnt see a reason to spend more time on finding out why grid wasn't working.
     """
 
     def __init__(self, parent):
+        # this grabs all the settings from the settings.ini file
         config = configparser.ConfigParser()
         config.read('settings.ini')
         self.config_list = [
@@ -536,14 +589,17 @@ class SettingsWindow():
             config['settings']['color']
         ]
 
+        # setting settings window size, color, title, and as a Toplevel window.
         self.settings_window = Toplevel(parent)
         self.settings_window.title("Settings")
         self.settings_window.geometry("460x410")
         self.settings_window.configure(bg=background_color)
 
+        # making the frame that holds all the widgets, and making its master the settings window itself.
         self.settings_frame = Frame(bg=background_color, master=self.settings_window)
         self.settings_frame.pack(fill="both", expand=True)
-        
+
+        # simple function to restart the quiz, same as in ResultsWindow.
         def restart_quiz():
             # Destroy all widgets in the root window to reset the GUI
             for widget in root.winfo_children():
@@ -551,6 +607,7 @@ class SettingsWindow():
             # Reinitialize the quiz GUI
             Quiz(root)
 
+        # this is creating the heading
         self.settings_heading = Label(self.settings_frame,
                                 text="Settings",
                                 font=("arial", "25"),
@@ -558,6 +615,7 @@ class SettingsWindow():
                                 )            
         self.settings_heading.pack(pady=(5, 0))
 
+        # this is creating the label says how to use the settings window
         self.settings_label = Label(self.settings_frame,
                                 text="This is the settings window, you can change several settings down below.",
                                 font=("arial", "14"),
@@ -567,21 +625,23 @@ class SettingsWindow():
                                 )
         self.settings_label.pack(pady=(0, 10))
 
-        # var set to make next row of option labels
-        self.labels_done = False
+        # this is a ref list for the labels, so we can change them later if needed.
+        self.settings_label_ref_list = []
+
+        # this function creates the labels for the optionmenus and comboboxes, it is called twice, once for each type.
         def create_labels(type):
+            # frame to hold the labels, this is so they can be aligned in a row and so the backround color can be set.
             label_row_frame = Frame(self.settings_frame, bg=background_color)
             label_row_frame.pack(fill="x")
 
-            if type == "comboboxes":
-                labels = ["Amount", "Length", "Password", "Color"]
-
-            elif type == "optionmenus":
+            # if statement to determine which type of labels to create
+            if type == "optionmenus":
                 labels = ["Mode", "Name", "Save", "Results"]
 
-            else:
-                 return
-            
+            elif type == "comboboxes":
+                labels = ["Amount", "Length", "Password", "Color"]
+
+            # for loop to create the labels, it goes through the list of labels and creates a label for each item in the list.
             for i in range(len(labels)):
                 self.settings_options_labels = Label(label_row_frame,
                                         text=labels[i],
@@ -591,17 +651,18 @@ class SettingsWindow():
                                         anchor="center"
                                         )
                 self.settings_options_labels.pack(side=LEFT, expand=True, fill="x", padx=5)
-            
-            self.labels_done = True
+                self.settings_label_ref_list.append(self.settings_options_labels)
 
-        # create the optiomenu labels, this must be before the frames for the optionmenus and comboboxes are created
+        # call the function to create labels for the optionmenus, this must be before the frame for the optionmenus is created
         create_labels("optionmenus")
 
         # Create a frame to hold optionmenus
         self.optionmenu_frame = Frame(self.settings_frame, bg=background_color)
         self.optionmenu_frame.pack(fill="x", pady=(5, 0))
+        # this is a reference dictonary for the option menus, so we can change them later if needed.
         self.optionmenus_ref_dict = {}
 
+        # this function creates the option menus, it goes through the list and creates a option menu for each item in the list.
         def create_optionmenus():
             optionmenus = [
             # this list contains all the data for the option menus
@@ -645,7 +706,7 @@ class SettingsWindow():
         self.comboboxes_frame.pack(fill="x", pady=(5, 0))
         self.comboboxes_ref_dict = {}
 
-
+        # this function creates the comboboxes, it goes through the list and creates a combobox for each item in the list.
         def create_comboboxes():
             comboboxes = [
             # this list contains all the data for the combomenu
@@ -653,7 +714,7 @@ class SettingsWindow():
             ["amount", "5", "10", "15", "20", 0, 0],
             ["length", "5", "10", "15", "20", 0, 1],
             ["password", "", "", "", "", 0, 2],
-            ["color", "grey", "white", "black", "transparent", 0, 3],
+            ["color", "grey", "white", "black", "green", 0, 3],
             ]
 
             # this loop creates the comboboxes, it goes through the list and creates a combobox for each item in the list.
@@ -715,7 +776,25 @@ class SettingsWindow():
                                 )
             self.make_button.pack(side=LEFT, expand=True, fill="x", padx=10)
           
-                
+        def input_checker(input):
+            for i in range(len(input)):
+                # Check if the input is empty
+                if input[i] == "":
+                    self.settings_label_ref_list[i].config(fg="red")
+                    self.settings_label.config(fg="red", text="There are settings left blank, the errors are indicated in red.")
+                    error = True
+                # Check if the input is a number
+                if i in [4, 5] and not input[i].isdigit():
+                    self.settings_label_ref_list[i].config(fg="red")
+                    self.settings_label.config(fg="red", text="There are letters where there shouldnt be, the errors are indicated in red.")
+                    error = True
+            if error == True:
+                return(True)
+            else:
+                return(False)
+            
+
+
         # Create the option menus and comboboxes
         create_optionmenus()
         create_comboboxes()
@@ -726,16 +805,38 @@ class SettingsWindow():
             """
             config = configparser.ConfigParser()
             config.read('settings.ini')
+            # Gather all variables starting with self. into a list
+            settings_values = [
+                self.optionmenus_ref_dict['mode'].cget('text'),
+                self.optionmenus_ref_dict['name'].cget('text'),
+                self.optionmenus_ref_dict['save'].cget('text'),
+                self.optionmenus_ref_dict['results'].cget('text'),
+                self.comboboxes_ref_dict['amount'].get(),
+                self.comboboxes_ref_dict['length'].get(),
+                self.comboboxes_ref_dict['password'].get(),
+                self.comboboxes_ref_dict['color'].get()
+            ]
 
-            # Update the settings with the new values from the option menus and comboboxes
-            config['settings']['mode'] = self.optionmenus_ref_dict['mode'].cget('text')
-            config['settings']['name'] = self.optionmenus_ref_dict['name'].cget('text')
-            config['settings']['save'] = self.optionmenus_ref_dict['save'].cget('text')
-            config['settings']['results'] = self.optionmenus_ref_dict['results'].cget('text')
-            config['settings']['amount'] = self.comboboxes_ref_dict['amount'].get()
-            config['settings']['difficulty'] = self.comboboxes_ref_dict['length'].get()
-            config['settings']['password'] = self.comboboxes_ref_dict['password'].get()
-            config['settings']['color'] = self.comboboxes_ref_dict['color'].get()
+            # this is done to reset the label colors to black before checking for errors, so that if there
+            # was a previous error that was fixed, the label color will be reset to black.
+            for i in range(len(settings_values)):
+                 self.settings_label_ref_list[i].config(fg="black")
+
+            if input_checker(settings_values):
+                 return
+            
+            # Assign the values from the list to the config
+            config['settings']['mode'] = settings_values[0]
+            config['settings']['name'] = settings_values[1]
+            config['settings']['save'] = settings_values[2]
+            config['settings']['results'] = settings_values[3]
+            config['settings']['amount'] = settings_values[4]
+            config['settings']['difficulty'] = settings_values[5]
+            config['settings']['password'] = settings_values[6]
+            config['settings']['color'] = settings_values[7]
+
+
+
 
             # Write the updated settings back to the file
             with open('settings.ini', 'w') as configfile:
