@@ -9,7 +9,7 @@ import configparser
 
 
 
-# This is where the questions and answers are, put them in the quotes.
+# This is where the questions and answers are, put them in the quotes. add extra questions by separating them with a comma.
 Questions = [
     "What is the capital city of France?",
     "Who wrote the play 'Romeo and Juliet'?",

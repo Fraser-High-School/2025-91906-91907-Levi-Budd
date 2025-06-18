@@ -1,3 +1,8 @@
+Hello, this is my program called "Levi's Quiz Helper", you can use it to either quiz yourself, set up questions for others to do,
+or to have it randomly generate math questions of a custom difficulty. In questions.py you can set up both the questions and the answers, just plop
+your questions in the quotes, and put the answers down below. You can also access the settings window by pressing "Start Quiz" after writing the password
+into the entry box, this password by default is "1234", but in the settings window you can change it to anything you want.
+
 here are explanations for what the settings do
 
 mode:
