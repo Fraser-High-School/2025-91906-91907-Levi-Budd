@@ -777,7 +777,11 @@ class SettingsWindow():
             self.make_button.pack(side=LEFT, expand=True, fill="x", padx=10)
           
         def input_checker(input):
+            # variable to check if there is an error
+            error = False
             for i in range(len(input)):
+
+
                 # Check if the input is empty
                 if input[i] == "":
                     self.settings_label_ref_list[i].config(fg="red")
@@ -788,6 +792,9 @@ class SettingsWindow():
                     self.settings_label_ref_list[i].config(fg="red")
                     self.settings_label.config(fg="red", text="There are letters where there shouldnt be, the errors are indicated in red.")
                     error = True
+            # the return is done here so that the entire function completes before ending
+            # otherwise if there were both blank and non-numeric inputs, it wouldnt make the
+            # label red for the non-numeric input.
             if error == True:
                 return(True)
             else:
