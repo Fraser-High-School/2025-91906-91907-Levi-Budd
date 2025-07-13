@@ -278,7 +278,9 @@ class Quiz():
             if not self.blank_checker() and self.counter > 0:
                         self.quiz_entry_instructions_color.config(text="this cannot be blank.", fg="#FF0000")
                         return
-            
+
+
+
             if self.blank_checker() and self.counter > 0 and self.mode == "math":
                 
                 # if the mode is 2, it will check if the answer is a number, and if it is not, it will end the function and tell you it must be a number.
@@ -304,7 +306,10 @@ class Quiz():
                     self.name = self.quiz_entry.get()
                     self.name = self.name[0:self.answer_length]
                     self.quiz_entry.delete(0, END)
-                    self.quiz_entry_instructions_color.config(text="Please enter your answer above", fg="#FFFF00")
+                    if self.color == "white" or self.color == "#FFFFFF":
+                        self.quiz_entry_instructions_color.config(fg="#000000")
+                    else:
+                        self.quiz_entry_instructions_color.config(text="Please enter your answer above", fg="#FFFF00")
                     self.quiz_instructions.config(text="Press start quiz to start answering questions!")
                     self.name_done = True
                 self.name_said = True
@@ -387,9 +392,6 @@ class Quiz():
                     elif not self.do_results:
                         self.quiz_entry_instructions_color.config(text="Quiz Finished! Talk to your operator!", fg="#00FFFF")
 
-
-                  
-                    
 
 
 
@@ -588,7 +590,7 @@ class SettingsWindow():
             config['settings']['password'],
             config['settings']['color']
         ]
-
+        
         # setting settings window size, color, title, and as a Toplevel window.
         self.settings_window = Toplevel(parent)
         self.settings_window.title("Settings")
@@ -792,6 +794,7 @@ class SettingsWindow():
                     self.settings_label_ref_list[i].config(fg="red")
                     self.settings_label.config(fg="red", text="There are letters where there shouldnt be, the errors are indicated in red.")
                     error = True
+
             # the return is done here so that the entire function completes before ending
             # otherwise if there were both blank and non-numeric inputs, it wouldnt make the
             # label red for the non-numeric input.

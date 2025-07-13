@@ -28,3 +28,16 @@ If set to True, the program will show results inside the application. If set to 
 
 color:
 Sets the background color. You can use any color accepted by Tkinter, including standard color names (like grey) or hex codes (like #000000 for black).
+
+here is the default of settings.ini if it is lost or broken
+
+[settings]
+mode = quiz
+amount = 10
+difficulty = 2
+password = 1234
+name = True
+save = True
+results = True
+color = grey
+
