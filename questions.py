@@ -87,7 +87,7 @@ except (configparser.NoSectionError, configparser.NoOptionError, ValueError):
 
 # dificulty is the number of numbers in the question, so a difficulty of 4 would be 4 numbers and 3 signs
 # amount is the number of questions to generate, so if amount is 10, it will generate 10 questions
-
+counter = 0
 # the lists to store the questions and answers
 Math_Answers = []
 Math_Questions = []
@@ -95,6 +95,8 @@ Math_Questions = []
 # this can be expanded to include more operators if desired
 operator = ['+', '-', '*', '/']
 def gen_questions():
+    Math_Questions.clear()
+    Math_Answers.clear()
     for i in range(amount):
         # variables are set to default values for each question, 
         counter = 0
